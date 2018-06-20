@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ImageView
+        android:id="@+id/hidden_detail_iv"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="#993311"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+    <TextView
+        android:id="@+id/hidden_detail_title_tv"
+        android:text="Te būs nosaukums"
+        android:textSize="24sp"
+        android:textColor="#000000"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/hidden_detail_iv"/>
+    <TextView
+        android:id="@+id/detail_distance_tv"
+        android:text="10 km to kuldigaLocation"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/hidden_detail_title_tv"/>
+
+    <TextView
+        android:id="@+id/detail_description_tv"
+        android:text="Te būs mazais apraksts"
+        android:textSize="18sp"
+        android:textColor="#000000"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/detail_distance_tv"/>
+    <Button
+        android:id="@+id/unlock_location_b"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Unclock kuldigaLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/test_location_b"
+        android:text="Did I find it?"
+        app:layout_constraintBottom_toTopOf="@+id/unlock_location_b"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</android.support.constraint.ConstraintLayout>

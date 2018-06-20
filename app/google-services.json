@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "1037851580162",
+    "firebase_url": "https://kuldigatour.firebaseio.com",
+    "project_id": "kuldigatour",
+    "storage_bucket": "kuldigatour.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1037851580162:android:10d7fd78a6830e2c",
+        "android_client_info": {
+          "package_name": "com.example.ivars.kuldigatour"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1037851580162-9kr4i9e3dr00dimi0vh8ve2ksj2ih3kd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ivars.kuldigatour",
+            "certificate_hash": "07fd0a58b9b77f428ab7d6a06e96e577f1450924"
+          }
+        },
+        {
+          "client_id": "1037851580162-99okfq3ehn909t70ft4alp1go0v4fs5d.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "1037851580162-99okfq3ehn909t70ft4alp1go0v4fs5d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3WMZzT1yRpptoJhyJDynlMbCqyEZXkro"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1037851580162-99okfq3ehn909t70ft4alp1go0v4fs5d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
