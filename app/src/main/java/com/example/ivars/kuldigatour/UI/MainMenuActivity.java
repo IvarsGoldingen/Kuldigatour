@@ -25,6 +25,7 @@ public class MainMenuActivity extends AppCompatActivity {
     @BindView(R.id.main_menu_info_btn)
     Button mInfoButton;
 
+    private static final String DISCOVERED_LIST_SELECTED_KEY = "discovered_list_key";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     @Override
@@ -34,19 +35,20 @@ public class MainMenuActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        //TODO: remove
-        //chech if we have location permission
-//        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-//                != PackageManager.PERMISSION_GRANTED){
-//            //Permission not granted
-//            ActivityCompat.requestPermissions(this, new String[]{
-//                    Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-//        }
-
         mHiddenLocBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainMenuActivity.this, HiddenLocationsActivity.class);
+                intent.putExtra(DISCOVERED_LIST_SELECTED_KEY, false);
+                startActivity(intent);
+            }
+        });
+
+        mDiscoveredLocBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainMenuActivity.this, HiddenLocationsActivity.class);
+                intent.putExtra(DISCOVERED_LIST_SELECTED_KEY, true);
                 startActivity(intent);
             }
         });

@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.example.ivars.kuldigatour.Adapters.LocationAdapter;
 import com.example.ivars.kuldigatour.Objects.KuldigaLocation;
 import com.example.ivars.kuldigatour.R;
+import com.example.ivars.kuldigatour.Utilities.LocationUtility;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,13 +27,11 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class HiddenLocationsListFragment extends Fragment
+public class LocationsListFragment extends Fragment
     implements LocationAdapter.LocationListItemClickListener{
 
-    private static final String TAG = HiddenLocationsListFragment.class.getSimpleName();
-
-    private static final int HIDDEN_LIST_TYPE = 1;
-    private static final int DISCOVERED_LIST_TYPE = 2;
+    private static final String TAG = LocationsListFragment.class.getSimpleName();
+    private static final String DISCOVERED_LIST_SELECTED_KEY = "discovered_list_key";
 
     //Helps us access the DB in general
     private FirebaseDatabase mFireBaseDb;
@@ -50,8 +49,13 @@ public class HiddenLocationsListFragment extends Fragment
     @BindView(R.id.hidden_locations_rv)
     RecyclerView locationsRv;
 
+    interface ListFragmentsInterface {
+        void calculatePreviousLocation();
+    }
+    ListFragmentsInterface detailsFragmentCallback;
+
     //obligatory empty constructor
-    public HiddenLocationsListFragment() {
+    public LocationsListFragment() {
     }
 
     //Called when a fragment is first attached to its context.
@@ -71,13 +75,19 @@ public class HiddenLocationsListFragment extends Fragment
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView list fragment");
         final View rootView = inflater.inflate(R.layout.fragment_hidden_locations_list, container, false);
+        final Boolean isDiscoveredList = getArguments().getBoolean(DISCOVERED_LIST_SELECTED_KEY, false);
+        Log.d(TAG, "is discovered list: " + isDiscoveredList);
+
+        //get the interface
+        detailsFragmentCallback = (ListFragmentsInterface) getActivity();
 
         ButterKnife.bind(this, rootView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         locationsRv.setLayoutManager(layoutManager);
         mKuldigaLocationList = new ArrayList<KuldigaLocation>();
-        mLocationAdapter = new LocationAdapter(getContext(), HIDDEN_LIST_TYPE, mKuldigaLocationList, this);
+        mLocationAdapter = new LocationAdapter(getContext(), isDiscoveredList, mKuldigaLocationList, this);
         locationsRv.setAdapter(mLocationAdapter);
 
         mFireBaseDb = FirebaseDatabase.getInstance();
@@ -92,9 +102,25 @@ public class HiddenLocationsListFragment extends Fragment
                 //If an object has the same fields as the DB, it can be dirrectly read into it
                 KuldigaLocation kuldigaLocation = dataSnapshot.getValue(KuldigaLocation.class);
                 //TODO: if kuldiga location is found add to found, is hidden add to hidden
-                mKuldigaLocationList.add(kuldigaLocation);
+                if (isDiscoveredList){
+                    //add discovered locations to the discovered list
+                    if (LocationUtility.isLocationDiscovered(kuldigaLocation, getActivity())){
+                        Log.d(TAG, "This location is discovered in prefernces");
+                        mKuldigaLocationList.add(kuldigaLocation);
+                        //make the activity calculate distances when a new object to the list gets added
+                        detailsFragmentCallback.calculatePreviousLocation();
+                    }
+                } else {
+                    //add hidden locations to the hidden list
+                    if (!LocationUtility.isLocationDiscovered(kuldigaLocation, getActivity())){
+                        Log.d(TAG, "This location is NOT discovered in prefernces");
+                        mKuldigaLocationList.add(kuldigaLocation);
+                        //make the activity calculate distances when a new object to the list gets added
+                        detailsFragmentCallback.calculatePreviousLocation();
+                    }
+                }
+                Log.d(TAG, "onChildAdded Size of list: " + mKuldigaLocationList.size());
                 mLocationAdapter.notifyDataSetChanged();
-                Log.d(TAG, kuldigaLocation.toString());
             }
 
             @Override
@@ -133,23 +159,26 @@ public class HiddenLocationsListFragment extends Fragment
         mCallback.onLocationClicked(mKuldigaLocationList.get(clickedLocation));
     }
 
-    //Pass all location coordinates to the activity
+    //Pass all location coordinates to the activity from the list of Locations
     public ArrayList<String> getAllLocationCoordinates(){
         //go through all locations currently in the list and pass them to the activity
         ArrayList<String> coordinatesList = new ArrayList<>();
         int numberOfItemsInList = mKuldigaLocationList.size();
+        Log.d(TAG, "getAllLocationCoordinates() nr of: " + numberOfItemsInList);
         for (int i = 0; i < numberOfItemsInList; i++){
             KuldigaLocation location = mKuldigaLocationList.get(i);
             coordinatesList.add(location.getCoordinates());
             Log.d("TEST", location.getCoordinates());
         }
+
         return coordinatesList;
     }
 
     //Update all list items with the distance to location
     public void updateDistancesInList (ArrayList<Double> distancesList){
-        //TODO: update items in list and then call notify dataSetChanged
-        int numberOfItems = mKuldigaLocationList.size();
+        //It is possible that more locations have been found after the coordinates list is created
+        //That is why distancesList is checked for size and not mKuldigaLocationList
+        int numberOfItems = distancesList.size();
         for (int i = 0; i < numberOfItems; i++){
             mKuldigaLocationList.get(i).setDistance(distancesList.get(i));
         }

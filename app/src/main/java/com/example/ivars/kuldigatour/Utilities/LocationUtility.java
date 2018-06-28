@@ -3,9 +3,11 @@ package com.example.ivars.kuldigatour.Utilities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
@@ -379,5 +381,23 @@ public class LocationUtility{
         };
     }
 
+    //Saves the location as found in shared preferences
+    public static void setLocationDiscovered(KuldigaLocation kuldigaLocation, Activity activity){
+        String locationName = kuldigaLocation.getDiscoveredName();
+        SharedPreferences sharedPreferences = activity.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        //Use the name of the location as key. Always set to true - this does not matter in this case
+        editor.putBoolean(locationName, true);
+        editor.commit();
+    }
+
+    public static boolean isLocationDiscovered (KuldigaLocation kuldigaLocation, Activity activity){
+        SharedPreferences sharedPreferences = activity.getPreferences(Context.MODE_PRIVATE);
+        if (sharedPreferences.contains(kuldigaLocation.getDiscoveredName())){
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 }

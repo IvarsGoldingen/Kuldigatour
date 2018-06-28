@@ -9,6 +9,8 @@ public class KuldigaLocation {
     private String workingHours;
     private String largeImageUrl;
     private String smallImageUrl;
+    private String hiddenLargeImageUrl;
+    private String hiddenSmallImageUrl;
     private Double distance;
 
     //String keys for passing as extra
@@ -20,11 +22,18 @@ public class KuldigaLocation {
     public static final String COORDINATES_KEY = "location_coordinates";
     public static final String LARGE_IMAGE_KEY = "large_image";
     public static final String SMALL_IMAGE_KEY = "small_image";
+    public static final String HIDDEN_LARGE_IMAGE_KEY = "hidden_large_image";
+    public static final String HIDDEN_SMALL_IMAGE_KEY = "hidden_small_image";
+    public static final String DISTANCE_KEY = "location_distance";
 
 
     //necessary for Firebase
     public KuldigaLocation() {
     }
+
+    /*
+    * Distance is not used in the constructor since it is calculated after creation of the objject
+    * */
 
     public KuldigaLocation(String coordinates,
                            String discoveredDescription,
@@ -33,7 +42,9 @@ public class KuldigaLocation {
                            String hiddenName,
                            String workingHours,
                            String largeImageUrl,
-                           String smallImageUrl) {
+                           String smallImageUrl,
+                           String hiddenSmallImageUrl,
+                           String hiddenLargeImageUrl) {
         this.coordinates = coordinates;
         this.discoveredDescription = discoveredDescription;
         this.discoveredName = discoveredName;
@@ -42,6 +53,8 @@ public class KuldigaLocation {
         this.workingHours = workingHours;
         this.largeImageUrl = largeImageUrl;
         this.smallImageUrl = smallImageUrl;
+        this.hiddenSmallImageUrl = hiddenSmallImageUrl;
+        this.hiddenLargeImageUrl = hiddenLargeImageUrl;
     }
 
     public String getLargeImageUrl() {
@@ -50,19 +63,6 @@ public class KuldigaLocation {
 
     public String getSmallImageUrl() {
         return smallImageUrl;
-    }
-
-
-    //TODO: delete
-    public String toString(){
-        return  coordinates + "\n" +
-                discoveredDescription + "\n" +
-                discoveredName + "\n" +
-                hiddenDescription + "\n" +
-                hiddenName + "\n" +
-                workingHours + "\n" +
-                largeImageUrl + "\n" +
-                smallImageUrl + "\n";
     }
 
     public String getCoordinates() {
@@ -128,5 +128,21 @@ public class KuldigaLocation {
 
     public void setDistance(Double distance) {
         this.distance = distance;
+    }
+
+    public void setHiddenLargeImageUrl(String hiddenLargeImageUrl) {
+        this.hiddenLargeImageUrl = hiddenLargeImageUrl;
+    }
+
+    public void setHiddenSmallImageUrl(String hiddenSmallImageUrl) {
+        this.hiddenSmallImageUrl = hiddenSmallImageUrl;
+    }
+
+    public String getHiddenLargeImageUrl() {
+        return hiddenLargeImageUrl;
+    }
+
+    public String getHiddenSmallImageUrl() {
+        return hiddenSmallImageUrl;
     }
 }

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,12 +35,16 @@ public class LocationDetailFragment extends Fragment {
     TextView descriptionTv;
     @BindView(R.id.detail_distance_tv)
     TextView distanceTv;
+    @BindView(R.id.unlock_location_b)
+    Button testLocationB;
 
     private static final String TAG = LocationDetailFragment.class.getSimpleName();
     //to use firebase storage
     private FirebaseStorage mFirebaseStorage;
     //to get a certain storage part
     private StorageReference mLocPhotosStorageRef;
+
+    private static final String DISCOVERED_LIST_SELECTED_KEY = "discovered_list_key";
 
     DetailFragmentInterface detailFragmentsCallback;
     interface DetailFragmentInterface{
@@ -66,35 +71,66 @@ public class LocationDetailFragment extends Fragment {
                 getArguments().getString(KuldigaLocation.HIDDEN_NAME_KEY),
                 getArguments().getString(KuldigaLocation.WORKING_HOURS_KEY),
                 getArguments().getString(KuldigaLocation.LARGE_IMAGE_KEY),
-                getArguments().getString(KuldigaLocation.SMALL_IMAGE_KEY)
+                getArguments().getString(KuldigaLocation.SMALL_IMAGE_KEY),
+                getArguments().getString(KuldigaLocation.HIDDEN_SMALL_IMAGE_KEY),
+                getArguments().getString(KuldigaLocation.HIDDEN_LARGE_IMAGE_KEY)
         );
+
+
+
+        testLocationB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LocationUtility.setLocationDiscovered(mKuldigaLocation, getActivity());
+                Toast.makeText(getActivity(), "location found", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         mFirebaseStorage = FirebaseStorage.getInstance();
         mLocPhotosStorageRef = mFirebaseStorage.getReference().child("location_photos");
 
-        titleTv.setText(mKuldigaLocation.getHiddenName());
-        descriptionTv.setText(mKuldigaLocation.getHiddenDescription());
-        Log.d(TAG, mKuldigaLocation.getLargeImageUrl());
-        Picasso.get().load(mKuldigaLocation.getLargeImageUrl()).into(locationIv);
 
-        //Get the state of utility and show the appropriate message to user
-        detailFragmentsCallback = (DetailFragmentInterface)getActivity();
-        int state = detailFragmentsCallback.getLocationUtilitiesState();
-        switch (state){
-            case LocationUtility.LOCATION_AVAILABLE_STATE:
-                distanceTv.setText("Getting distance...");
-                break;
-            case LocationUtility.LOCATION_NOT_AVAILABLE_STATE:
-                distanceTv.setText("Enable location permission in settings to see distance to location");
-                break;
-            case LocationUtility.LOCATION_PENDING_STATE:
-                distanceTv.setText("Getting distance...");
-                break;
-            default:
-                Log.e(TAG, "unknown location state");
-                break;
+        boolean isDiscovered = getArguments().getBoolean(DISCOVERED_LIST_SELECTED_KEY, false);
+        if (isDiscovered){
+            Log.d(TAG, "location is discovered");
+            //if location discovered, show discovered name
+            titleTv.setText(mKuldigaLocation.getDiscoveredName());
+            descriptionTv.setText(mKuldigaLocation.getDiscoveredDescription());
+            Picasso.get().load(mKuldigaLocation.getLargeImageUrl()).into(locationIv);
+            //TODO: if working hours is not null show them here
+        } else {
+            Log.d(TAG, "location is hidden");
+            //if location hidden show hidden name
+            titleTv.setText(mKuldigaLocation.getHiddenName());
+            descriptionTv.setText(mKuldigaLocation.getHiddenDescription());
+            Picasso.get().load(mKuldigaLocation.getHiddenLargeImageUrl()).into(locationIv);
         }
 
+        //check if distance was calculated in the list fragment
+        if (getArguments().containsKey(KuldigaLocation.DISTANCE_KEY)){
+            double distance = getArguments().getDouble(KuldigaLocation.DISTANCE_KEY);
+            distanceTv.setText("Distance: " + distance + " km");
+        } else {
+            // if the distance was not passed from the list fragment determine what message
+            //should be displayed
+            //Get the state of utility and show the appropriate message to user
+            detailFragmentsCallback = (DetailFragmentInterface)getActivity();
+            int state = detailFragmentsCallback.getLocationUtilitiesState();
+            switch (state){
+                case LocationUtility.LOCATION_AVAILABLE_STATE:
+                    distanceTv.setText("Getting distance...");
+                    break;
+                case LocationUtility.LOCATION_NOT_AVAILABLE_STATE:
+                    distanceTv.setText("Enable location permission in settings to see distance to location");
+                    break;
+                case LocationUtility.LOCATION_PENDING_STATE:
+                    distanceTv.setText("Getting distance...");
+                    break;
+                default:
+                    Log.e(TAG, "unknown location state");
+                    break;
+            }
+        }
         return rootView;
     }
 

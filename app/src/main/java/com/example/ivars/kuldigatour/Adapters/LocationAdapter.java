@@ -22,24 +22,23 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
 
     private static final String TAG = LocationAdapter.class.getSimpleName();
 
-    private static final int HIDDEN_LIST_TYPE = 1;
-    private static final int DISCOVERED_LIST_TYPE = 2;
-
     private Context mContext;
     private ArrayList<KuldigaLocation> mLocationsList;
     //used to detect of the current list is supposed to show hidden or discovered locations
-    private int listType;
+    private boolean isDiscoveredList;
     private LocationListItemClickListener mOnClickListener;
 
     public interface LocationListItemClickListener{
         void OnLocationClickListener(int clickedLocation);
     }
 
-    public LocationAdapter(Context context, int listType,
-                           ArrayList<KuldigaLocation> list, LocationListItemClickListener listener){
+    public LocationAdapter(Context context,
+                           boolean isDiscoveredList,
+                           ArrayList<KuldigaLocation> list,
+                           LocationListItemClickListener listener){
         mContext = context;
         mLocationsList = list;
-        this.listType = listType;
+        this.isDiscoveredList = isDiscoveredList;
         mOnClickListener = listener;
     }
 
@@ -52,27 +51,28 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
 
     @Override
     public void onBindViewHolder(@NonNull LocationAdapterViewHolder holder, int position) {
-        switch (listType){
-            case HIDDEN_LIST_TYPE:
-                KuldigaLocation currentKuldigaLocation = mLocationsList.get(position);
-                holder.listDescriptionTv.setText(currentKuldigaLocation.getHiddenDescription());
-                holder.listTitleTv.setText(currentKuldigaLocation.getHiddenName());
-                if (currentKuldigaLocation.getDistance() != null){
-                    holder.listDistanceToTv.setText(
-                            String.valueOf(currentKuldigaLocation.getDistance()) + "\n km");
-                } else {
-                    //TODO possibly use a loading indicator
-                    //distance has not been calculated yet
-                    holder.listDistanceToTv.setText("x km");
-                }
-                //TODO get image from FB
-                break;
-            case DISCOVERED_LIST_TYPE:
-                break;
-            default:
-                Log.e(TAG, "Unknown list type");
-                    break;
+        KuldigaLocation currentKuldigaLocation = mLocationsList.get(position);
+        if (isDiscoveredList){
+            //displaying the discovered atributes
+            holder.listDescriptionTv.setText(currentKuldigaLocation.getDiscoveredDescription());
+            holder.listTitleTv.setText(currentKuldigaLocation.getDiscoveredName());
+        } else {
+            //Displaying the hidden atributes
+            holder.listDescriptionTv.setText(currentKuldigaLocation.getHiddenDescription());
+            holder.listTitleTv.setText(currentKuldigaLocation.getHiddenName());
+            //TODO get image from FB
         }
+
+        //set the distance for both lists
+        if (currentKuldigaLocation.getDistance() != null){
+            holder.listDistanceToTv.setText(
+                    String.valueOf(currentKuldigaLocation.getDistance()) + "\n km");
+        } else {
+            //TODO possibly use a loading indicator
+            //distance has not been calculated yet
+            holder.listDistanceToTv.setText("x km");
+        }
+
     }
 
 
