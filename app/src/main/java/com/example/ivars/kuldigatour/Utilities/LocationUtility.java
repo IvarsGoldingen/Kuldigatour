@@ -244,20 +244,18 @@ public class LocationUtility{
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-    //Callback which receives the latest location
-    private void createLocationCallback(){
-        mLocationCallback = new LocationCallback(){
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null){
-                    Log.e(TAG, "locationResult == null");
-                    return;
-                }
-                for (android.location.Location location : locationResult.getLocations()){
-                    mLocationInterface.currentLocationCallback(location);
-                }
+    public static boolean isLocationDiscovered(KuldigaLocation kuldigaLocation, Activity activity) {
+        //TODO is this ok
+        if (activity != null) {
+            //Activity can be null if swithcing back and forth between activities fast
+            SharedPreferences sharedPreferences = activity.getPreferences(Context.MODE_PRIVATE);
+            if (sharedPreferences.contains(kuldigaLocation.getDiscoveredName())) {
+                return true;
+            } else {
+                return false;
             }
-        };
+        }
+        return false;
     }
 
     //Method takes the created location request and checks if the device's settings are appropriate
@@ -391,13 +389,22 @@ public class LocationUtility{
         editor.commit();
     }
 
-    public static boolean isLocationDiscovered (KuldigaLocation kuldigaLocation, Activity activity){
-        SharedPreferences sharedPreferences = activity.getPreferences(Context.MODE_PRIVATE);
-        if (sharedPreferences.contains(kuldigaLocation.getDiscoveredName())){
-            return true;
-        } else {
-            return false;
-        }
+    //Callback which receives the latest location
+    private void createLocationCallback() {
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    Log.e(TAG, "locationResult == null");
+                    return;
+                }
+                for (android.location.Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        mLocationInterface.currentLocationCallback(location);
+                    }
+                }
+            }
+        };
     }
 
 }

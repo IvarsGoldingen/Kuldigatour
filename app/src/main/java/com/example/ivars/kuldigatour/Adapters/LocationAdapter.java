@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.ivars.kuldigatour.Objects.KuldigaLocation;
 import com.example.ivars.kuldigatour.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -45,10 +46,11 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     @NonNull
     @Override
     public LocationAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.hidden_location_item, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.location_item, parent, false);
         return new LocationAdapterViewHolder(view);
     }
 
+    //Binds a viewholder to the data and a certain position
     @Override
     public void onBindViewHolder(@NonNull LocationAdapterViewHolder holder, int position) {
         KuldigaLocation currentKuldigaLocation = mLocationsList.get(position);
@@ -56,11 +58,18 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
             //displaying the discovered atributes
             holder.listDescriptionTv.setText(currentKuldigaLocation.getDiscoveredDescription());
             holder.listTitleTv.setText(currentKuldigaLocation.getDiscoveredName());
+            if (holder.listImageIv.getDrawable() == null) {
+                //Load the image only in the first time
+                Picasso.get().load(currentKuldigaLocation.getSmallImageUrl()).into(holder.listImageIv);
+            }
         } else {
             //Displaying the hidden atributes
             holder.listDescriptionTv.setText(currentKuldigaLocation.getHiddenDescription());
             holder.listTitleTv.setText(currentKuldigaLocation.getHiddenName());
             //TODO get image from FB
+            if (holder.listImageIv.getDrawable() == null) {
+                Picasso.get().load(currentKuldigaLocation.getHiddenSmallImageUrl()).into(holder.listImageIv);
+            }
         }
 
         //set the distance for both lists

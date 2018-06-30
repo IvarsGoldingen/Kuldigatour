@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Main menu button dimens-->
+    <dimen name="main_menu_button_width">250dp</dimen>
+    <dimen name="main_menu_button_margin">10dp</dimen>
+    <dimen name="main_menu_button_text_size">18sp</dimen>
+
+    <!--detail fragment dimens-->
+    <dimen name="side_margin_detail_view">6dp</dimen>
+    <dimen name="refresh_icon_start_size">36dp</dimen>
+</resources>

@@ -5,11 +5,11 @@
     android:layout_height="112dp"
     android:orientation="horizontal">
     <ImageView
-        android:background="#ff00FF"
         android:id="@+id/hidden_list_iv"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_margin="6dp"/>
+        android:layout_margin="6dp"
+        android:scaleType="centerCrop" />
     <LinearLayout
         android:layout_gravity="center"
         android:layout_width="0dp"

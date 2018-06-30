@@ -76,7 +76,7 @@ public class LocationsListFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView list fragment");
-        final View rootView = inflater.inflate(R.layout.fragment_hidden_locations_list, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_locations_list, container, false);
         final Boolean isDiscoveredList = getArguments().getBoolean(DISCOVERED_LIST_SELECTED_KEY, false);
         Log.d(TAG, "is discovered list: " + isDiscoveredList);
 

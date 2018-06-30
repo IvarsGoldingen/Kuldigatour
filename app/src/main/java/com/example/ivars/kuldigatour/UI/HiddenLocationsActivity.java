@@ -43,7 +43,7 @@ public class HiddenLocationsActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_hidden_location_view);
+        setContentView(R.layout.activity_location_view);
 
         //TODO: if is discovered search shared pref for discovered locations otherwise search for hidden ones
         isDiscovered = getIntent().getBooleanExtra(DISCOVERED_LIST_SELECTED_KEY, false);
@@ -133,9 +133,12 @@ public class HiddenLocationsActivity extends AppCompatActivity
     }
 
     //Gets distances for the list from the previously gotten location
+    //check if the previous locatin was saved
     public void getDistancesFromLastLocation(){
-        ArrayList<String> coordinatesList = mHiddenLocationsListFragment.getAllLocationCoordinates();
-        new CalculateDistancesTask(this).execute(coordinatesList, lastKnownLocation);
+        if (lastKnownLocation != null) {
+            ArrayList<String> coordinatesList = mHiddenLocationsListFragment.getAllLocationCoordinates();
+            new CalculateDistancesTask(this).execute(coordinatesList, lastKnownLocation);
+        }
     }
 
     /*

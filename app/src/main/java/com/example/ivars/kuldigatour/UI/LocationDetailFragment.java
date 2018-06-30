@@ -1,6 +1,8 @@
 package com.example.ivars.kuldigatour.UI;
 
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -37,14 +39,17 @@ public class LocationDetailFragment extends Fragment {
     TextView distanceTv;
     @BindView(R.id.unlock_location_b)
     Button testLocationB;
+    private static final String DISCOVERED_LIST_SELECTED_KEY = "discovered_list_key";
+    //The size the refresh icon should be at the end of the animation
+    private static final int REFRESH_ICON_END_SIZE_DP = 40;
+    @BindView(R.id.detail_view_refresh_icon)
+    ImageView refreshButtonIv;
 
     private static final String TAG = LocationDetailFragment.class.getSimpleName();
     //to use firebase storage
     private FirebaseStorage mFirebaseStorage;
     //to get a certain storage part
     private StorageReference mLocPhotosStorageRef;
-
-    private static final String DISCOVERED_LIST_SELECTED_KEY = "discovered_list_key";
 
     DetailFragmentInterface detailFragmentsCallback;
     interface DetailFragmentInterface{
@@ -58,7 +63,7 @@ public class LocationDetailFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_hidden_locations_detail_view, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_locations_detail_view, container, false);
 
         ButterKnife.bind(this, rootView);
 
@@ -75,8 +80,6 @@ public class LocationDetailFragment extends Fragment {
                 getArguments().getString(KuldigaLocation.HIDDEN_SMALL_IMAGE_KEY),
                 getArguments().getString(KuldigaLocation.HIDDEN_LARGE_IMAGE_KEY)
         );
-
-
 
         testLocationB.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +99,7 @@ public class LocationDetailFragment extends Fragment {
             //if location discovered, show discovered name
             titleTv.setText(mKuldigaLocation.getDiscoveredName());
             descriptionTv.setText(mKuldigaLocation.getDiscoveredDescription());
+            //TODO:Add a failed image or/and placeholder
             Picasso.get().load(mKuldigaLocation.getLargeImageUrl()).into(locationIv);
             //TODO: if working hours is not null show them here
         } else {
@@ -137,11 +141,16 @@ public class LocationDetailFragment extends Fragment {
     //This method gets called from the activity to update the texview with the distance
     public void updateDistanceTv(double distance){
         distanceTv.setText("Distance: " + distance + " km");
+        refreshIconAnimation();
     }
 
-    //This method gets called from the activity to update the texview with the distance
-    public void setDistanceTv(String text){
-        distanceTv.setText(text);
+    //Makes the refresh Icon rotate 180 indicating to the user that the distance has been updated
+    private void refreshIconAnimation() {
+        ObjectAnimator rotateAnim = ObjectAnimator.ofFloat(refreshButtonIv, "rotation", 0f, 360f);
+        rotateAnim.setDuration(1000); // miliseconds
+        AnimatorSet refreshAnimation = new AnimatorSet();
+        refreshAnimation.play(rotateAnim);
+        refreshAnimation.start();
     }
 
     @Override
@@ -153,11 +162,6 @@ public class LocationDetailFragment extends Fragment {
             startLocationUpdates();
         }
         */
-    }
-
-    //TODO
-    public void showToastTest(String text, android.location.Location location){
-        Toast.makeText(getActivity(), text + location.getLatitude(), Toast.LENGTH_SHORT).show();
     }
 
 }
