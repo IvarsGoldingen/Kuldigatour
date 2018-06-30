@@ -113,8 +113,6 @@ public class HiddenLocationsActivity extends AppCompatActivity
     public void currentLocationCallback(Location location) {
         //Save the last known location to have it available when returning from detail to list view
         lastKnownLocation = location;
-        //TODO: change this to something better
-        showSnackBarMessage("Location updated");
         //TODO: how to check what is visible
         if (mLocationDetailFragment != null){
             Log.d(TAG, "detail fragment exists");
