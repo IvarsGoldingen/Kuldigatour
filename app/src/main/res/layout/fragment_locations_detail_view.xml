@@ -1,77 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <ImageView
-        android:id="@+id/hidden_detail_iv"
+    android:fitsSystemWindows="true">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:scaleType="centerCrop"
-        app:layout_constraintRight_toRightOf="parent"/>
-    <TextView
-        android:id="@+id/hidden_detail_title_tv"
-        android:text="Te būs nosaukums"
-        android:textSize="24sp"
-        android:textColor="#000000"
+        android:layout_height="300dp"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="@color/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:title="Burlak purlak">
+
+            <ImageView
+                android:id="@+id/hidden_detail_iv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#232323"
+                android:fitsSystemWindows="true"
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax" />
+
+            <android.support.v7.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"></android.support.v7.widget.Toolbar>
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/side_margin_detail_view"
-        android:layout_marginRight="@dimen/side_margin_detail_view"
-        app:layout_constraintTop_toBottomOf="@+id/hidden_detail_iv"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <LinearLayout
-        android:id="@+id/deteail_view_distance_ll"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/side_margin_detail_view"
-        android:layout_marginRight="@dimen/side_margin_detail_view"
-        android:gravity="center_vertical"
-        app:layout_constraintTop_toBottomOf="@+id/hidden_detail_title_tv">
-
-        <TextView
-            android:id="@+id/detail_distance_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:text="10 km to kuldigaLocation"
-            android:textColor="#000000"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/detail_view_refresh_icon"
-            android:layout_width="@dimen/refresh_icon_start_size"
-            android:layout_height="@dimen/refresh_icon_start_size"
-            android:src="@drawable/ic_refresh_black_24dp"
-            app:layout_constraintLeft_toRightOf="@+id/detail_distance_tv"
-            app:layout_constraintTop_toTopOf="@id/detail_distance_tv" />
-    </LinearLayout>
-
-    <ScrollView
-        android:id="@+id/detail_view_sv"
-        android:layout_height="0dp"
-        android:layout_marginLeft="@dimen/side_margin_detail_view"
-        android:layout_width="match_parent"
-        android:layout_marginRight="@dimen/side_margin_detail_view"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/deteail_view_distance_ll">
-
-        <TextView
-            android:id="@+id/detail_description_tv"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Te būs mazais apraksts"
-            android:textColor="#000000"
-            android:textSize="18sp"
-            app:layout_constraintTop_toBottomOf="@+id/detail_distance_tv" />
-    </ScrollView>
-    <Button
-        android:id="@+id/unlock_location_b"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:text="Unclock kuldigaLocation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-</android.support.constraint.ConstraintLayout>
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/hidden_detail_title_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/side_margin_detail_view"
+                android:layout_marginRight="@dimen/side_margin_detail_view"
+                android:text="Te būs nosaukums"
+                android:textColor="#000000"
+                android:textSize="24sp" />
+
+            <LinearLayout
+                android:id="@+id/deteail_view_distance_ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/side_margin_detail_view"
+                android:layout_marginRight="@dimen/side_margin_detail_view"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/detail_distance_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:text="10 km to kuldigaLocation"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/detail_view_refresh_icon"
+                    android:layout_width="@dimen/refresh_icon_start_size"
+                    android:layout_height="@dimen/refresh_icon_start_size"
+                    android:src="@drawable/ic_refresh_black_24dp"
+                    app:layout_constraintLeft_toRightOf="@+id/detail_distance_tv"
+                    app:layout_constraintTop_toTopOf="@id/detail_distance_tv" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/detail_description_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Te būs mazais apraksts"
+                android:textColor="#000000"
+                android:textSize="34sp"
+                app:layout_constraintTop_toBottomOf="@+id/detail_distance_tv" />
+
+            <Button
+                android:id="@+id/unlock_location_b"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Unclock kuldigaLocation" />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:layout_anchor="@id/appBar"
+        app:layout_anchorGravity="bottom|end" />
+</android.support.design.widget.CoordinatorLayout>

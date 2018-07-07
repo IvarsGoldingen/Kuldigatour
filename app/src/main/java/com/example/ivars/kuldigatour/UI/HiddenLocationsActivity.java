@@ -45,7 +45,7 @@ public class HiddenLocationsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_view);
 
-        //TODO: if is discovered search shared pref for discovered locations otherwise search for hidden ones
+        //if is discovered search shared pref for discovered locations otherwise search for hidden ones
         isDiscovered = getIntent().getBooleanExtra(DISCOVERED_LIST_SELECTED_KEY, false);
         Bundle args = new Bundle();
         args.putBoolean(DISCOVERED_LIST_SELECTED_KEY, isDiscovered);
@@ -74,6 +74,7 @@ public class HiddenLocationsActivity extends AppCompatActivity
 
     @Override
     public void onLocationClicked(KuldigaLocation kuldigaLocation) {
+
         locationOpenedInDetailFragment = kuldigaLocation;
         //Add extras for the details frgment
         Bundle args = new Bundle();
@@ -148,8 +149,6 @@ public class HiddenLocationsActivity extends AppCompatActivity
         getDistancesFromLastLocation();
     }
 
-
-    //TODO weak reference
     //Calculated the distances to locations from String coordinates
     private static class CalculateDistancesTask extends AsyncTask<Object,Void, ArrayList<Double>>{
 

@@ -64,6 +64,8 @@ public class LocationDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_locations_detail_view, container, false);
+        //hide the activities action bar in the detail fragment because the toolbar is used
+        ((HiddenLocationsActivity) getActivity()).getSupportActionBar().hide();
 
         ButterKnife.bind(this, rootView);
 
@@ -135,6 +137,8 @@ public class LocationDetailFragment extends Fragment {
                     break;
             }
         }
+
+
         return rootView;
     }
 
@@ -156,7 +160,7 @@ public class LocationDetailFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //TODO:
+        //TODO:Orientation changes
         /*
         if (mRequestingLocationUpdates){
             startLocationUpdates();

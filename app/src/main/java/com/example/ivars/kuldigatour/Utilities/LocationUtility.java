@@ -140,7 +140,6 @@ public class LocationUtility{
                                     mLocationInterface.currentLocationCallback(location);
                                 } else {
                                     Log.d(TAG, "Failed to get last known location");
-                                    //TODO: Show some kind of loading indicator to user
                                     //Location on device probably disabled, user will be asked to
                                     //enable when regular updates are started
                                     mLocationInterface.differentLocationState(LOCATION_PENDING_STATE);
@@ -201,14 +200,12 @@ public class LocationUtility{
                 .show();
     }
 
-    //TODO: do I need to dismiss the dialog manually
     //Listener for getting the users action from the explanation message dialog
     DialogInterface.OnClickListener explenationMessageListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             switch (which){
                 case DialogInterface.BUTTON_NEGATIVE:
-                    //TODO:
                     //The user has pressed on DON'T use button, turn off asking for permission
                     mLocationInterface.differentLocationState(LOCATION_NOT_AVAILABLE_STATE);
                     break;
@@ -245,7 +242,6 @@ public class LocationUtility{
     }
 
     public static boolean isLocationDiscovered(KuldigaLocation kuldigaLocation, Activity activity) {
-        //TODO is this ok
         if (activity != null) {
             //Activity can be null if swithcing back and forth between activities fast
             SharedPreferences sharedPreferences = activity.getPreferences(Context.MODE_PRIVATE);

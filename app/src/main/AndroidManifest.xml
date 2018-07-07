@@ -14,10 +14,10 @@
         <activity android:name=".UI.MainMenuActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!--android:theme="@style/DetailActivityTheme"-->
         <activity
             android:name=".UI.HiddenLocationsActivity"
             android:launchMode="singleTop">

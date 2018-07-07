@@ -66,7 +66,6 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
             //Displaying the hidden atributes
             holder.listDescriptionTv.setText(currentKuldigaLocation.getHiddenDescription());
             holder.listTitleTv.setText(currentKuldigaLocation.getHiddenName());
-            //TODO get image from FB
             if (holder.listImageIv.getDrawable() == null) {
                 Picasso.get().load(currentKuldigaLocation.getHiddenSmallImageUrl()).into(holder.listImageIv);
             }

@@ -62,6 +62,7 @@ public class LocationsListFragment extends Fragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
         //Make sure the host implements the callback
         try{
             mCallback = (LocationItemClickListener) context;
@@ -79,6 +80,9 @@ public class LocationsListFragment extends Fragment
         final View rootView = inflater.inflate(R.layout.fragment_locations_list, container, false);
         final Boolean isDiscoveredList = getArguments().getBoolean(DISCOVERED_LIST_SELECTED_KEY, false);
         Log.d(TAG, "is discovered list: " + isDiscoveredList);
+
+        //show the activities action bar in the list fragment because it maybe hidden in the detail
+        ((HiddenLocationsActivity) getActivity()).getSupportActionBar().show();
 
         //get the interface
         detailsFragmentCallback = (ListFragmentsInterface) getActivity();
