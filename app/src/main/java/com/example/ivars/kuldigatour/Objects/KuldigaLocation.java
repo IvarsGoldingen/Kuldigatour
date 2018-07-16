@@ -1,6 +1,8 @@
 package com.example.ivars.kuldigatour.Objects;
 
-public class KuldigaLocation {
+import java.io.Serializable;
+
+public class KuldigaLocation implements Serializable {
     private String coordinates;
     private String discoveredDescription;
     private String discoveredName;

@@ -159,31 +159,14 @@ public class LocationUtility{
     }
 
 
-    /*
-    * Get result for the location permission request
-    * This method will be callled from locationsActivity, because the callback is first called there
-    */
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
-            case REQUEST_LOCATION_PERMISSION:
-                Log.d(TAG, "onRequestPermissionsResult()");
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //permission was granted, get last known location
-                    Log.d(TAG, "permission was granted, get last known location");
-                    getLastKnownLocation();
-                } else {
-                    Log.d(TAG, "onRequestPermissionsResult()permission not granted");
-                    //permission denied
-                    //TODO: check if this gets called when user sets do not display anymore message
-                    mLocationInterface.differentLocationState(LOCATION_NOT_AVAILABLE_STATE);
-                }
-                break;
-            default:
-                Log.e(TAG, "Unknown permission request");
-                break;
-        }
+    //Saves the location as found in shared preferences
+    public static void setLocationDiscovered(KuldigaLocation kuldigaLocation, Activity activity) {
+        String locationName = kuldigaLocation.getDiscoveredName();
+        SharedPreferences sharedPreferences = activity.getSharedPreferences("Kuldiga_your_prefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        //Use the name of the location as key. Always set to true - this does not matter in this case
+        editor.putBoolean(locationName, true);
+        editor.commit();
     }
 
     //A message dialog box for showing explenation for location permission
@@ -241,18 +224,7 @@ public class LocationUtility{
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-    public static boolean isLocationDiscovered(KuldigaLocation kuldigaLocation, Activity activity) {
-        if (activity != null) {
-            //Activity can be null if swithcing back and forth between activities fast
-            SharedPreferences sharedPreferences = activity.getPreferences(Context.MODE_PRIVATE);
-            if (sharedPreferences.contains(kuldigaLocation.getDiscoveredName())) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return false;
-    }
+
 
     //Method takes the created location request and checks if the device's settings are appropriate
     private void checkDeviceSettingsForRegularUpdates(){
@@ -375,14 +347,44 @@ public class LocationUtility{
         };
     }
 
-    //Saves the location as found in shared preferences
-    public static void setLocationDiscovered(KuldigaLocation kuldigaLocation, Activity activity){
-        String locationName = kuldigaLocation.getDiscoveredName();
-        SharedPreferences sharedPreferences = activity.getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        //Use the name of the location as key. Always set to true - this does not matter in this case
-        editor.putBoolean(locationName, true);
-        editor.commit();
+    public static boolean isLocationDiscovered(KuldigaLocation kuldigaLocation, Activity activity) {
+        if (activity != null) {
+            //Activity can be null if swithcing back and forth between activities fast
+            SharedPreferences sharedPreferences = activity.getSharedPreferences("Kuldiga_your_prefs", Context.MODE_PRIVATE);
+            if (sharedPreferences.contains(kuldigaLocation.getDiscoveredName())) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    /*
+     * Get result for the location permission request
+     * This method will be callled from locationsActivity, because the callback is first called there
+     */
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION_PERMISSION:
+                Log.d(TAG, "onRequestPermissionsResult()");
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //permission was granted, get last known location
+                    Log.d(TAG, "permission was granted, get last known location");
+                    getLastKnownLocation();
+                } else {
+                    Log.d(TAG, "onRequestPermissionsResult()permission not granted");
+                    //permission denied
+                    //TODO: check if this gets called when user sets do not display anymore message
+                    mLocationInterface.differentLocationState(LOCATION_NOT_AVAILABLE_STATE);
+                }
+                break;
+            default:
+                Log.e(TAG, "Unknown permission result");
+                break;
+        }
     }
 
     //Callback which receives the latest location

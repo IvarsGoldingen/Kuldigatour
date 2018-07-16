@@ -9,10 +9,10 @@
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/detail_fragment_collapsing_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
@@ -24,16 +24,19 @@
                 android:id="@+id/hidden_detail_iv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#232323"
+                android:background="#ffffff"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax" />
 
             <android.support.v7.widget.Toolbar
+                android:id="@+id/detail_fragment_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"></android.support.v7.widget.Toolbar>
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+            </android.support.v7.widget.Toolbar>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
@@ -46,16 +49,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/hidden_detail_title_tv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/side_margin_detail_view"
-                android:layout_marginRight="@dimen/side_margin_detail_view"
-                android:text="Te būs nosaukums"
-                android:textColor="#000000"
-                android:textSize="24sp" />
 
             <LinearLayout
                 android:id="@+id/deteail_view_distance_ll"
@@ -72,7 +65,7 @@
                     android:layout_marginRight="10dp"
                     android:text="10 km to kuldigaLocation"
                     android:textColor="#000000"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <ImageView
@@ -90,21 +83,19 @@
                 android:layout_height="wrap_content"
                 android:text="Te būs mazais apraksts"
                 android:textColor="#000000"
-                android:textSize="34sp"
+                android:layout_marginLeft="@dimen/side_margin_detail_view"
+                android:layout_marginRight="@dimen/side_margin_detail_view"
+                android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@+id/detail_distance_tv" />
-
-            <Button
-                android:id="@+id/unlock_location_b"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Unclock kuldigaLocation" />
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/share_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         app:layout_anchor="@id/appBar"
+        android:src="@drawable/ic_share_black_48dp"
         app:layout_anchorGravity="bottom|end" />
 </android.support.design.widget.CoordinatorLayout>

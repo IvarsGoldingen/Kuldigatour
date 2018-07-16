@@ -46,7 +46,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     @NonNull
     @Override
     public LocationAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.location_item, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.location_card, parent, false);
         return new LocationAdapterViewHolder(view);
     }
 
@@ -58,17 +58,22 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
             //displaying the discovered atributes
             holder.listDescriptionTv.setText(currentKuldigaLocation.getDiscoveredDescription());
             holder.listTitleTv.setText(currentKuldigaLocation.getDiscoveredName());
-            if (holder.listImageIv.getDrawable() == null) {
-                //Load the image only in the first time
-                Picasso.get().load(currentKuldigaLocation.getSmallImageUrl()).into(holder.listImageIv);
-            }
+            //cancel the previous load request, so the wrong image does not get loaded here
+            Picasso.get().cancelRequest(holder.listImageIv);
+            Picasso.get().load(currentKuldigaLocation.getSmallImageUrl())
+                    .placeholder(R.drawable.loading_image)
+                    .error(R.drawable.image_download_error)
+                    .into(holder.listImageIv);
         } else {
             //Displaying the hidden atributes
             holder.listDescriptionTv.setText(currentKuldigaLocation.getHiddenDescription());
             holder.listTitleTv.setText(currentKuldigaLocation.getHiddenName());
-            if (holder.listImageIv.getDrawable() == null) {
-                Picasso.get().load(currentKuldigaLocation.getHiddenSmallImageUrl()).into(holder.listImageIv);
-            }
+            //cancel the previous load request, so the wrong image does not get loaded here
+            Picasso.get().cancelRequest(holder.listImageIv);
+            Picasso.get().load(currentKuldigaLocation.getHiddenSmallImageUrl())
+                    .placeholder(R.drawable.loading_image)
+                    .error(R.drawable.image_download_error)
+                    .into(holder.listImageIv);
         }
 
         //set the distance for both lists
@@ -90,6 +95,12 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
             return mLocationsList.size();
         }
         return 0;
+    }
+
+    //Allows the list to be changed from discovered to hidden locations
+    public void changeList(ArrayList list) {
+        mLocationsList = list;
+        isDiscoveredList = !isDiscoveredList;
     }
 
     class LocationAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
