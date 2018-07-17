@@ -16,7 +16,9 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -28,11 +30,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.ivars.kuldigatour.Objects.KuldigaLocation;
 import com.example.ivars.kuldigatour.R;
 import com.example.ivars.kuldigatour.Utilities.LocationUtility;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
@@ -45,6 +48,8 @@ public class LocationDetailFragment extends Fragment {
     private static final int LOCATION_UPDATED_ANMIMATION_LEGHT = 500;
     //Request code for storage access
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 565;
+    //Test adds ID
+    private static final String ADD_MOB_APP_ID = "ca-app-pub-3940256099942544/1033173712";
 
 
     @BindView(R.id.hidden_detail_iv)
@@ -63,10 +68,13 @@ public class LocationDetailFragment extends Fragment {
     CollapsingToolbarLayout collapsingToolbar;
     @BindView(R.id.share_fab)
     FloatingActionButton shareFab;
+    @BindView(R.id.detail_view_container)
+    CoordinatorLayout detailViewCl;
 
     private static final String TAG = LocationDetailFragment.class.getSimpleName();
     boolean isDiscovered = false;
     private KuldigaLocation mKuldigaLocation = null;
+    private InterstitialAd mInterstitialAd;
 
     DetailFragmentInterface detailFragmentsCallback;
     interface DetailFragmentInterface{
@@ -108,6 +116,8 @@ public class LocationDetailFragment extends Fragment {
             //if location discovered, show discovered atributes
             setUiWithDiscovereAtributes();
         } else {
+            //Set up the add in case the user unlocks a location
+            initializeAdd();
             Log.d(TAG, "location is hidden");
             //if location hidden show hidden attributes
             setUiWithHiddenAtributes();
@@ -149,6 +159,12 @@ public class LocationDetailFragment extends Fragment {
         return rootView;
     }
 
+    private void initializeAdd() {
+        mInterstitialAd = new InterstitialAd(getActivity());
+        mInterstitialAd.setAdUnitId(ADD_MOB_APP_ID);
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+    }
+
     private void setUiWithDiscovereAtributes() {
         descriptionTv.setText(mKuldigaLocation.getDiscoveredDescription());
         Picasso.get().load(mKuldigaLocation.getLargeImageUrl())
@@ -172,7 +188,20 @@ public class LocationDetailFragment extends Fragment {
 
     private void setLocationAsDiscovered() {
         LocationUtility.setLocationDiscovered(mKuldigaLocation, getActivity());
-        Toast.makeText(getActivity(), "location found", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), "location found", Toast.LENGTH_SHORT).show();
+        Snackbar snackbar = Snackbar.make(detailViewCl, "Location found", Snackbar.LENGTH_SHORT);
+        snackbar.addCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+                //Show an add when location has been discovered after the snackbar has been dismissed
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    Log.e(TAG, "add was not loaded");
+                }
+            }
+        });
+        snackbar.show();
         //todo: small delay???
         setUiWithDiscovereAtributes();
     }
@@ -264,6 +293,9 @@ public class LocationDetailFragment extends Fragment {
     //This method gets called from the activity to update the texview with the distance
     public void updateDistanceTv(double distance){
         distanceTv.setText("Distance: " + distance + " km");
+        if (distance < 0.03) {
+            setLocationAsDiscovered();
+        }
         refreshIconAnimation();
     }
 
@@ -277,17 +309,6 @@ public class LocationDetailFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        //TODO:Orientation changes
-        /*
-        if (mRequestingLocationUpdates){
-            startLocationUpdates();
-        }
-        */
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.detail_view_menu, menu);
     }
@@ -296,7 +317,6 @@ public class LocationDetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_unlock:
-                Log.d(TAG, "onOptionsItemSelected action_unlock");
                 setLocationAsDiscovered();
                 break;
         }

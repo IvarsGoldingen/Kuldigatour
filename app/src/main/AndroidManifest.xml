@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.ivars.kuldigatour">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -16,18 +16,29 @@
         <activity android:name=".UI.MainMenuActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--android:theme="@style/DetailActivityTheme"-->
+        <!-- android:theme="@style/DetailActivityTheme" -->
         <activity
-            android:theme="@style/DetailActivityTheme"
             android:name=".UI.HiddenLocationsActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:theme="@style/DetailActivityTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UI.MainMenuActivity"/>
+                android:value=".UI.MainMenuActivity" />
         </activity>
+
+        <receiver android:name=".LocationWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/location_widget_provider_info" />
+        </receiver>
     </application>
 
 </manifest>

@@ -3,6 +3,8 @@ package com.example.ivars.kuldigatour.Utilities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import com.example.ivars.kuldigatour.LocationWidgetProvider;
 import com.example.ivars.kuldigatour.Objects.KuldigaLocation;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -56,6 +59,8 @@ public class LocationUtility{
     //Numbers after coma for calculating distance
     private static final int ACCURACY_FOR_LIST = 1;
     private static final int ACCURACY_FOR_DETAIL = 2;
+    //shared preference for storing the number of locations found
+    private static final String NUM_LOCATIONS_DISCOVERED_KEY = "number_of_locations_discovered";
 
 
     private Activity context;
@@ -166,7 +171,16 @@ public class LocationUtility{
         SharedPreferences.Editor editor = sharedPreferences.edit();
         //Use the name of the location as key. Always set to true - this does not matter in this case
         editor.putBoolean(locationName, true);
+        //Update the number of items discovered
+        int numDiscoveredLocations = sharedPreferences.getInt(NUM_LOCATIONS_DISCOVERED_KEY, 0);
+        numDiscoveredLocations++;
+        editor.putInt(NUM_LOCATIONS_DISCOVERED_KEY, numDiscoveredLocations);
         editor.commit();
+        //Update the widget
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(activity);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(activity, LocationWidgetProvider.class));
+        LocationWidgetProvider.updateLocationWidgets(activity, appWidgetManager, appWidgetIds);
+
     }
 
     //A message dialog box for showing explenation for location permission
