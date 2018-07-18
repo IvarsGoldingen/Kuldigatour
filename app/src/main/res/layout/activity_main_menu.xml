@@ -1,90 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main_menu_container"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".UI.MainMenuActivity">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/main_menu_title_tv"
-        android:layout_width="wrap_content"
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/main_menu_container"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="48sp"
-        android:text="Kuldīga tour"
-        android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:textColor="@color/textColor"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:context=".UI.MainMenuActivity">
 
-    <ImageView
-        android:id="@+id/main_menu_iv"
-        android:layout_height="200dp"
-        android:layout_width="wrap_content"
-        android:padding="20dp"
-        android:src="@drawable/kuldiga_logo"
-        app:layout_constraintTop_toBottomOf="@id/main_menu_title_tv" />
+        <TextView
+            android:id="@+id/main_menu_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="48sp"
+            android:text="Kuldīga tour"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:textColor="@color/textColor"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/main_menu_iv"
+            android:layout_height="200dp"
+            android:layout_width="wrap_content"
+            android:padding="20dp"
+            android:src="@drawable/kuldiga_logo"
+            app:layout_constraintTop_toBottomOf="@id/main_menu_title_tv" />
 
 
-    <Button
-        android:layout_width="@dimen/main_menu_button_width"
-        android:id="@+id/main_menu_hidden_loc_btn"
-        android:text="Hidden locations"
-        android:layout_margin="@dimen/main_menu_button_margin"
-        android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:textColor="@color/textColor"
-        android:textSize="@dimen/main_menu_button_text_size"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/main_menu_iv" />
+        <Button
+            android:layout_width="@dimen/main_menu_button_width"
+            android:id="@+id/main_menu_hidden_loc_btn"
+            android:text="Hidden locations"
+            android:layout_margin="@dimen/main_menu_button_margin"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/main_menu_button_text_size"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/main_menu_iv" />
 
-    <Button
-        android:id="@+id/main_menu_discoverd_loc_btn"
-        android:layout_width="@dimen/main_menu_button_width"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/main_menu_button_margin"
-        android:background="@color/colorAccent"
-        android:text="Discovered locations"
-        android:textColor="@color/textColor"
-        android:textSize="@dimen/main_menu_button_text_size"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/main_menu_hidden_loc_btn" />
+        <Button
+            android:id="@+id/main_menu_discoverd_loc_btn"
+            android:layout_width="@dimen/main_menu_button_width"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/main_menu_button_margin"
+            android:background="@color/colorAccent"
+            android:text="Discovered locations"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/main_menu_button_text_size"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/main_menu_hidden_loc_btn" />
 
-    <Button
-        android:layout_width="@dimen/main_menu_button_width"
-        android:id="@+id/main_menu_info_btn"
-        android:text="Information"
-        android:layout_margin="@dimen/main_menu_button_margin"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/main_menu_discoverd_loc_btn"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:background="@color/colorAccent"
-        android:textColor="@color/textColor"
-        android:textSize="@dimen/main_menu_button_text_size"
-        app:layout_constraintRight_toRightOf="parent"/>
+        <Button
+            android:layout_width="@dimen/main_menu_button_width"
+            android:id="@+id/main_menu_info_btn"
+            android:text="Information"
+            android:layout_margin="@dimen/main_menu_button_margin"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/main_menu_discoverd_loc_btn"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:background="@color/colorAccent"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/main_menu_button_text_size"
+            app:layout_constraintRight_toRightOf="parent"/>
 
-    <TextView
-        android:textColor="@color/textColor"
-        android:id="@+id/main_menu_score_tv"
-        android:textSize="24sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:text="5/10"/>
-    <TextView
-        android:textColor="@color/textColor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/main_menu_score_tv"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:text="Locations found"/>
+        <TextView
+            android:textColor="@color/textColor"
+            android:id="@+id/main_menu_score_tv"
+            android:textSize="24sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/score_tv"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:text="5/10"/>
 
+        <TextView
+            android:id="@+id/score_tv"
+            android:textColor="@color/textColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            app:layout_constraintTop_toBottomOf="@+id/main_menu_info_btn"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:text="Locations found"/>
 </android.support.constraint.ConstraintLayout>
+</ScrollView>

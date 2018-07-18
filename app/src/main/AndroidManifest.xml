@@ -13,7 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".UI.MainMenuActivity">
+        <activity
+            android:name=".UI.MainMenuActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,6 +27,14 @@
             android:name=".UI.HiddenLocationsActivity"
             android:launchMode="singleTop"
             android:theme="@style/DetailActivityTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".UI.MainMenuActivity" />
+        </activity>
+
+        <activity
+            android:name=".UI.InformationActivity"
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".UI.MainMenuActivity" />
