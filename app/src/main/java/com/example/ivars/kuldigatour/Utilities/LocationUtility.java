@@ -19,6 +19,7 @@ import android.util.Log;
 
 import com.example.ivars.kuldigatour.LocationWidgetProvider;
 import com.example.ivars.kuldigatour.Objects.KuldigaLocation;
+import com.example.ivars.kuldigatour.R;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -61,6 +62,7 @@ public class LocationUtility{
     private static final int ACCURACY_FOR_DETAIL = 2;
     //shared preference for storing the number of locations found
     private static final String NUM_LOCATIONS_DISCOVERED_KEY = "number_of_locations_discovered";
+    private static final String SHARED_PREFS_NAME = "Kuldiga_tour_app_shared_preferences";
 
 
     private Activity context;
@@ -78,7 +80,6 @@ public class LocationUtility{
 
     //Constructor
     public LocationUtility(Activity context, LocationInterface locationInterface) {
-        Log.d(TAG, "LocationUtility constructor");
         this.context = context;
         mLocationInterface = locationInterface;
     }
@@ -94,30 +95,25 @@ public class LocationUtility{
     }
 
     public void startLocationRequestProcess(){
-        Log.d(TAG, "LocationUtility startLocationRequestProcess()");
         //get the fused location provider to get location
         //used for both getting last location and regular location updates
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
         //Check if permissions are granted and ask for them if not
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "Permissions not granted");
             //Permissions are not granted
             //Check if we need too show the user an explanation why the app need location
             //Method checks if the user has already once denied location permission
             if (ActivityCompat.shouldShowRequestPermissionRationale
                     (context, Manifest.permission.ACCESS_FINE_LOCATION)){
-                Log.d(TAG, "Explenation messages required");
                 //Show the user a dialog box where it is explained why location is necessary
                 showPermissionExplenationMessage();
             } else {
-                Log.d(TAG, "Explenation messages NOT required");
                 //No need to show explenation, just ask for the permission
                 askLocationPermission();
             }
         } else {
             //Permissions granted
-            Log.d(TAG, "Access fine location permission granted");
             getLastKnownLocation();
         }
     }
@@ -131,7 +127,6 @@ public class LocationUtility{
     */
     @SuppressLint("MissingPermission")
     private void getLastKnownLocation(){
-        Log.d(TAG, "getLastKnownLocation()");
         mFusedLocationProviderClient.getLastLocation().
                 addOnSuccessListener(context,
                         new OnSuccessListener<Location>() {
@@ -140,11 +135,9 @@ public class LocationUtility{
                                 //save the last known location in the global variable.
                                 mCurrentLocation = location;
                                 if (location != null) {
-                                    Log.d(TAG, "Received last known location");
                                     //Return the last known location to the activity
                                     mLocationInterface.currentLocationCallback(location);
                                 } else {
-                                    Log.d(TAG, "Failed to get last known location");
                                     //Location on device probably disabled, user will be asked to
                                     //enable when regular updates are started
                                     mLocationInterface.differentLocationState(LOCATION_PENDING_STATE);
@@ -158,7 +151,6 @@ public class LocationUtility{
     //Ask for permission which is necessary for the last known location update
     //The result will be first called in the locations activity
     private void askLocationPermission(){
-        Log.d(TAG, "askLocationPermission()");
         ActivityCompat.requestPermissions(context,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
     }
@@ -167,7 +159,7 @@ public class LocationUtility{
     //Saves the location as found in shared preferences
     public static void setLocationDiscovered(KuldigaLocation kuldigaLocation, Activity activity) {
         String locationName = kuldigaLocation.getDiscoveredName();
-        SharedPreferences sharedPreferences = activity.getSharedPreferences("Kuldiga_your_prefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = activity.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         //Use the name of the location as key. Always set to true - this does not matter in this case
         editor.putBoolean(locationName, true);
@@ -183,18 +175,17 @@ public class LocationUtility{
 
     }
 
-    //A message dialog box for showing explenation for location permission
-    //Is displayed when the user has already once declined to give location permission
-    private void showPermissionExplenationMessage(){
-        Log.d(TAG, "showPermissionExplenationMessage()");
-        new AlertDialog.Builder(context)
-                .setMessage("Location permission is needed for the app to display distance to target\n" +
-                        "Press OK to enable location or DON'T USE to use the app without this permission\n" +
-                        "You can enable location in options later")
-                .setPositiveButton("ENABLE", explenationMessageListener)
-                .setNegativeButton("DON'T USE", explenationMessageListener)
-                .create()
-                .show();
+    public static boolean isLocationDiscovered(KuldigaLocation kuldigaLocation, Activity activity) {
+        if (activity != null) {
+            //Activity can be null if swithcing back and forth between activities fast
+            SharedPreferences sharedPreferences = activity.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+            if (sharedPreferences.contains(kuldigaLocation.getDiscoveredName())) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
     }
 
     //Listener for getting the users action from the explanation message dialog
@@ -238,48 +229,15 @@ public class LocationUtility{
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-
-
-    //Method takes the created location request and checks if the device's settings are appropriate
-    private void checkDeviceSettingsForRegularUpdates(){
-        Log.d(TAG, "checkDeviceSettingsForRegularUpdates()");
-        //add the created locations request to the builder to check settings
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(mLocationRequest);
-        //check whether the current location settings are satisfied
-        SettingsClient client = LocationServices.getSettingsClient(context);
-        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
-        //respond if hte settings are appropriate or not
-        task.addOnSuccessListener(context, new OnSuccessListener<LocationSettingsResponse>() {
-            @Override
-            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                // All location settings are satisfied. The client can initialize
-                // location requests here.
-                Log.d(TAG, "LOCATIONS SETTINGS SUCCESS");
-                requestLocationUpdates();
-            }
-        });
-
-        task.addOnFailureListener(context, new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                if (e instanceof ResolvableApiException) {
-                    // KuldigaLocation settings are not satisfied, but this can be fixed
-                    // by showing the user a dialog.
-                    try {
-                        Log.d(TAG, "Show dialog for updating settings");
-                        // Show the dialog by calling startResolutionForResult(),
-                        // and check the result in onActivityResult().
-                        ResolvableApiException resolvable = (ResolvableApiException) e;
-                        resolvable.startResolutionForResult(context,
-                                REQUEST_CHECK_SETTINGS);
-                    } catch (IntentSender.SendIntentException sendEx) {
-                        Log.e(TAG, "error in onFailure()");
-                        mLocationInterface.errorMessageCallback("Failed to change settings");
-                    }
-                }
-            }
-        });
+    //A message dialog box for showing explenation for location permission
+    //Is displayed when the user has already once declined to give location permission
+    private void showPermissionExplenationMessage() {
+        new AlertDialog.Builder(context)
+                .setMessage(context.getResources().getString(R.string.location_permission_explenation))
+                .setPositiveButton(R.string.enable, explenationMessageListener)
+                .setNegativeButton(R.string.dont_use, explenationMessageListener)
+                .create()
+                .show();
     }
 
     /*
@@ -287,7 +245,6 @@ public class LocationUtility{
     * this method in the locationUtility object will be called with the same fields
     * */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult()");
         switch (requestCode){
             case REQUEST_CHECK_SETTINGS:
                 if (resultCode == RESULT_OK){
@@ -361,17 +318,42 @@ public class LocationUtility{
         };
     }
 
-    public static boolean isLocationDiscovered(KuldigaLocation kuldigaLocation, Activity activity) {
-        if (activity != null) {
-            //Activity can be null if swithcing back and forth between activities fast
-            SharedPreferences sharedPreferences = activity.getSharedPreferences("Kuldiga_your_prefs", Context.MODE_PRIVATE);
-            if (sharedPreferences.contains(kuldigaLocation.getDiscoveredName())) {
-                return true;
-            } else {
-                return false;
+    //Method takes the created location request and checks if the device's settings are appropriate
+    private void checkDeviceSettingsForRegularUpdates() {
+        //add the created locations request to the builder to check settings
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationRequest);
+        //check whether the current location settings are satisfied
+        SettingsClient client = LocationServices.getSettingsClient(context);
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+        //respond if hte settings are appropriate or not
+        task.addOnSuccessListener(context, new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                // All location settings are satisfied. The client can initialize
+                // location requests here.
+                requestLocationUpdates();
             }
-        }
-        return false;
+        });
+
+        task.addOnFailureListener(context, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    // KuldigaLocation settings are not satisfied, but this can be fixed
+                    // by showing the user a dialog.
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult(context,
+                                REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        mLocationInterface.errorMessageCallback(context.getString(R.string.Failed_toChange_settings));
+                    }
+                }
+            }
+        });
     }
 
     /*
@@ -381,17 +363,13 @@ public class LocationUtility{
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_LOCATION_PERMISSION:
-                Log.d(TAG, "onRequestPermissionsResult()");
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //permission was granted, get last known location
-                    Log.d(TAG, "permission was granted, get last known location");
                     getLastKnownLocation();
                 } else {
-                    Log.d(TAG, "onRequestPermissionsResult()permission not granted");
                     //permission denied
-                    //TODO: check if this gets called when user sets do not display anymore message
                     mLocationInterface.differentLocationState(LOCATION_NOT_AVAILABLE_STATE);
                 }
                 break;
@@ -407,7 +385,6 @@ public class LocationUtility{
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult == null) {
-                    Log.e(TAG, "locationResult == null");
                     return;
                 }
                 for (android.location.Location location : locationResult.getLocations()) {

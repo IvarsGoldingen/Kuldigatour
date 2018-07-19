@@ -3,7 +3,6 @@ package com.example.ivars.kuldigatour.Adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +60,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
             //cancel the previous load request, so the wrong image does not get loaded here
             Picasso.get().cancelRequest(holder.listImageIv);
             Picasso.get().load(currentKuldigaLocation.getSmallImageUrl())
+                    .fit()
                     .placeholder(R.drawable.loading_image)
                     .error(R.drawable.image_download_error)
                     .into(holder.listImageIv);
@@ -71,6 +71,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
             //cancel the previous load request, so the wrong image does not get loaded here
             Picasso.get().cancelRequest(holder.listImageIv);
             Picasso.get().load(currentKuldigaLocation.getHiddenSmallImageUrl())
+                    .fit()
                     .placeholder(R.drawable.loading_image)
                     .error(R.drawable.image_download_error)
                     .into(holder.listImageIv);
@@ -78,12 +79,13 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
 
         //set the distance for both lists
         if (currentKuldigaLocation.getDistance() != null){
-            holder.listDistanceToTv.setText(
-                    String.valueOf(currentKuldigaLocation.getDistance()) + "\n km");
+            String text = currentKuldigaLocation.getDistance() + "\n"
+                    + mContext.getResources().getString(R.string.km);
+            holder.listDistanceToTv.setText(text);
         } else {
-            //TODO possibly use a loading indicator
-            //distance has not been calculated yet
-            holder.listDistanceToTv.setText("x km");
+            String text = mContext.getResources().getString(R.string.no_distance_placeholder)
+                    + "\n" + mContext.getResources().getString(R.string.km);
+            holder.listDistanceToTv.setText(text);
         }
 
     }
@@ -123,7 +125,6 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         @Override
         public void onClick(View v) {
             int locationClicked = getAdapterPosition();
-            Log.d("Viewholder", "Onclick registered");
             mOnClickListener.OnLocationClickListener(locationClicked);
         }
     }

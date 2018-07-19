@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
     android:id="@+id/main_menu_sv"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/main_menu_container"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main_menu_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:context=".UI.MainMenuActivity">
 
         <ImageView
             android:id="@+id/main_menu_iv"
-            android:layout_height="@dimen/main_menu_logo_height"
             android:layout_width="wrap_content"
+            android:layout_height="@dimen/main_menu_logo_height"
             android:padding="@dimen/main_menu_logo_padding"
             android:src="@drawable/kuldiga_logo"
             app:layout_constraintTop_toTopOf="parent" />
 
+
         <Button
-            android:layout_width="@dimen/main_menu_button_width"
             android:id="@+id/main_menu_hidden_loc_btn"
-            android:text="@string/hidden_locations"
+            android:layout_width="@dimen/main_menu_button_width_landscape"
+            android:layout_height="@dimen/main_menu_button_height_landscape"
             android:layout_margin="@dimen/main_menu_button_margin"
-            android:layout_height="wrap_content"
             android:background="@color/colorAccent"
-            app:layout_constraintLeft_toLeftOf="parent"
+            android:text="@string/hidden_locations"
             android:textColor="@color/textColor"
             android:textSize="@dimen/main_menu_button_text_size"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/main_menu_discoverd_loc_btn"
             app:layout_constraintTop_toBottomOf="@id/main_menu_iv" />
 
         <Button
             android:id="@+id/main_menu_discoverd_loc_btn"
-            android:layout_width="@dimen/main_menu_button_width"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/main_menu_button_width_landscape"
+            android:layout_height="@dimen/main_menu_button_height_landscape"
             android:layout_margin="@dimen/main_menu_button_margin"
             android:background="@color/colorAccent"
             android:text="@string/discovered_locations"
@@ -44,41 +44,40 @@
             android:textSize="@dimen/main_menu_button_text_size"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/main_menu_hidden_loc_btn" />
+            app:layout_constraintTop_toBottomOf="@id/main_menu_iv" />
 
         <Button
-            android:layout_width="@dimen/main_menu_button_width"
             android:id="@+id/main_menu_info_btn"
-            android:text="@string/information"
+            android:layout_width="@dimen/main_menu_button_width_landscape"
+            android:layout_height="@dimen/main_menu_button_height_landscape"
             android:layout_margin="@dimen/main_menu_button_margin"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/main_menu_discoverd_loc_btn"
-            app:layout_constraintLeft_toLeftOf="parent"
             android:background="@color/colorAccent"
+            android:text="@string/information"
             android:textColor="@color/textColor"
             android:textSize="@dimen/main_menu_button_text_size"
-            app:layout_constraintRight_toRightOf="parent"/>
+            app:layout_constraintLeft_toRightOf="@id/main_menu_discoverd_loc_btn"
+            app:layout_constraintTop_toBottomOf="@id/main_menu_iv" />
 
         <TextView
-            android:textColor="@color/textColor"
             android:id="@+id/main_menu_score_tv"
-            android:textSize="@dimen/subtitle_text_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/score_tv"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/subtitle_text_size"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/score_tv"
             tools:text="5/10" />
 
         <TextView
             android:id="@+id/score_tv"
-            android:textColor="@color/textColor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/main_menu_score_title"
-            app:layout_constraintTop_toBottomOf="@+id/main_menu_info_btn"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/subtitle_text_size"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:textSize="@dimen/subtitle_text_size" />
+            app:layout_constraintTop_toBottomOf="@+id/main_menu_info_btn" />
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

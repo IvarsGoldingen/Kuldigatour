@@ -7,36 +7,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="4dp">
+        android:padding="@dimen/information_menu_margin">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="App info"
-            android:textColor="#000000"
-            android:textSize="28sp"
+            android:text="@string/information_menu_title"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/information_menu_title_size"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Use this app to discover different locations in Kuldiga. A hint picture
-and distance to the location is displayed in the hidden list. Use this to find the location. Open
-the location you want form the hidden locations list and when you are close enough, it will become
-discovered and more information about that place will be displayed. If you do not want to actually
-go to a place, you can discover it using the options menu on the upper right corner of each location.
-You can reset you score from the Main menu's options menu."
-            android:textColor="#000000"
-            android:textSize="20sp" />
+            android:text="@string/information_menu_text"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/regular_body_text_size" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="More info on Kuldiga"
-            android:textColor="#000000"
-            android:textSize="28sp"
+            android:text="@string/information_menu_title_more_info"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/information_menu_title_size"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -46,8 +41,8 @@ You can reset you score from the Main menu's options menu."
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="56dp"
-                android:layout_height="56dp"
+                android:layout_width="@dimen/link_icon_size"
+                android:layout_height="@dimen/link_icon_size"
                 android:src="@drawable/ic_globe_48dp" />
 
             <TextView
@@ -55,9 +50,9 @@ You can reset you score from the Main menu's options menu."
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:text="Kuldiga's home page"
-                android:textColor="#000000"
-                android:textSize="24sp" />
+                android:text="@string/kuldiga_home_page"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/bigger_body_text_size" />
         </LinearLayout>
 
         <LinearLayout
@@ -67,8 +62,8 @@ You can reset you score from the Main menu's options menu."
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="56dp"
-                android:layout_height="56dp"
+                android:layout_width="@dimen/link_icon_size"
+                android:layout_height="@dimen/link_icon_size"
                 android:src="@drawable/ic_globe_48dp" />
 
             <TextView
@@ -76,9 +71,9 @@ You can reset you score from the Main menu's options menu."
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:text="Wikipedia"
-                android:textColor="#000000"
-                android:textSize="24sp" />
+                android:text="@string/wikipedia"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/bigger_body_text_size" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

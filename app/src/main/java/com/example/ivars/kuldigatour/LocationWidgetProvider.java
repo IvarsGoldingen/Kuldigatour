@@ -17,6 +17,8 @@ public class LocationWidgetProvider extends AppWidgetProvider {
 
     //shared preference for storing the number of locations found
     private static final String NUM_LOCATIONS_DISCOVERED_KEY = "number_of_locations_discovered";
+    private static final String SHARED_PREFS_NAME = "Kuldiga_tour_app_shared_preferences";
+    private static final int NUMBER_OF_ITEMS_IN_DB = 10;
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
@@ -30,11 +32,11 @@ public class LocationWidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.widget_layout, pendingIntent);
 
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("Kuldiga_your_prefs",
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS_NAME,
                 Context.MODE_PRIVATE);
         //Update the number of items discovered
         int numDiscoveredLocations = sharedPreferences.getInt(NUM_LOCATIONS_DISCOVERED_KEY, 0);
-        views.setTextViewText(R.id.widget_text, numDiscoveredLocations + "/10");
+        views.setTextViewText(R.id.widget_text, numDiscoveredLocations + "/" + NUMBER_OF_ITEMS_IN_DB);
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);

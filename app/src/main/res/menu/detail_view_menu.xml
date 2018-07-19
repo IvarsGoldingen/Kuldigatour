@@ -4,6 +4,6 @@
     <item
         android:id="@+id/action_unlock"
         android:orderInCategory="100"
-        android:title="Discover location now"
+        android:title="@string/discover_location_now"
         app:showAsAction="never" />
 </menu>

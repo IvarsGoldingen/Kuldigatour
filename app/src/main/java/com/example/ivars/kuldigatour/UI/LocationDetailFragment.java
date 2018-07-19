@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -50,6 +51,7 @@ public class LocationDetailFragment extends Fragment {
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 565;
     //Test adds ID
     private static final String ADD_MOB_APP_ID = "ca-app-pub-3940256099942544/1033173712";
+    private static final String LOCATION_TYPE_STATE = "location_type_key";
 
 
     @BindView(R.id.hidden_detail_iv)
@@ -72,7 +74,7 @@ public class LocationDetailFragment extends Fragment {
     CoordinatorLayout detailViewCl;
 
     private static final String TAG = LocationDetailFragment.class.getSimpleName();
-    boolean isDiscovered = false;
+    Boolean isDiscovered;
     private KuldigaLocation mKuldigaLocation = null;
     private InterstitialAd mInterstitialAd;
 
@@ -84,18 +86,21 @@ public class LocationDetailFragment extends Fragment {
     public LocationDetailFragment() {
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(LOCATION_TYPE_STATE, isDiscovered);
+    }
+
+
+
     @SuppressLint("MissingPermission")
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_locations_detail_view, container, false);
-        //hide the activities action bar in the detail fragment because the toolbar is used
-        //((HiddenLocationsActivity) getActivity()).getSupportActionBar().hide();
-
         ButterKnife.bind(this, rootView);
-
         setUpToolbar();
-
         //get the passed in locations object
         mKuldigaLocation = new KuldigaLocation(
                 getArguments().getString(KuldigaLocation.COORDINATES_KEY),
@@ -110,15 +115,22 @@ public class LocationDetailFragment extends Fragment {
                 getArguments().getString(KuldigaLocation.HIDDEN_LARGE_IMAGE_KEY)
         );
 
-        isDiscovered = getArguments().getBoolean(DISCOVERED_LIST_SELECTED_KEY, false);
+        if (savedInstanceState != null) {
+            //if there is data in the save instance
+            isDiscovered = savedInstanceState.getBoolean(LOCATION_TYPE_STATE);
+        } else {
+            //get this value only when the fragment is first created
+            if (isDiscovered == null) {
+                isDiscovered = getArguments().getBoolean(DISCOVERED_LIST_SELECTED_KEY, false);
+            }
+        }
+
         if (isDiscovered){
-            Log.d(TAG, "location is discovered");
             //if location discovered, show discovered atributes
             setUiWithDiscovereAtributes();
         } else {
             //Set up the add in case the user unlocks a location
             initializeAdd();
-            Log.d(TAG, "location is hidden");
             //if location hidden show hidden attributes
             setUiWithHiddenAtributes();
         }
@@ -126,7 +138,9 @@ public class LocationDetailFragment extends Fragment {
         //check if distance was calculated in the list fragment
         if (getArguments().containsKey(KuldigaLocation.DISTANCE_KEY)){
             double distance = getArguments().getDouble(KuldigaLocation.DISTANCE_KEY);
-            distanceTv.setText("Distance: " + distance + " km");
+            String text = getActivity().getResources().getString(R.string.distance_indication)
+                    + " " + distance + " " + getActivity().getResources().getString(R.string.km);
+            distanceTv.setText(text);
         } else {
             // if the distance was not passed from the list fragment determine what message
             //should be displayed
@@ -135,13 +149,13 @@ public class LocationDetailFragment extends Fragment {
             int state = detailFragmentsCallback.getLocationUtilitiesState();
             switch (state){
                 case LocationUtility.LOCATION_AVAILABLE_STATE:
-                    distanceTv.setText("Getting distance...");
+                    distanceTv.setText(R.string.Getting_dstance_state);
                     break;
                 case LocationUtility.LOCATION_NOT_AVAILABLE_STATE:
-                    distanceTv.setText("Enable location permission in settings to see distance to location");
+                    distanceTv.setText(R.string.enable_permissions_text);
                     break;
                 case LocationUtility.LOCATION_PENDING_STATE:
-                    distanceTv.setText("Getting distance...");
+                    distanceTv.setText(R.string.Getting_dstance_state);
                     break;
                 default:
                     Log.e(TAG, "unknown location state");
@@ -187,9 +201,10 @@ public class LocationDetailFragment extends Fragment {
     }
 
     private void setLocationAsDiscovered() {
+        isDiscovered = true;
         LocationUtility.setLocationDiscovered(mKuldigaLocation, getActivity());
         //Toast.makeText(getActivity(), "location found", Toast.LENGTH_SHORT).show();
-        Snackbar snackbar = Snackbar.make(detailViewCl, "Location found", Snackbar.LENGTH_SHORT);
+        Snackbar snackbar = Snackbar.make(detailViewCl, R.string.location_found, Snackbar.LENGTH_SHORT);
         snackbar.addCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
@@ -202,7 +217,6 @@ public class LocationDetailFragment extends Fragment {
             }
         });
         snackbar.show();
-        //todo: small delay???
         setUiWithDiscovereAtributes();
     }
 
@@ -210,16 +224,12 @@ public class LocationDetailFragment extends Fragment {
         //first check for permissions
         //Check if we have storage permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Log.d(TAG, "Build version >= M");
             if (getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "Permission NOT granted");
                 //External storage permission is not granted yet
                 getActivity().requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
                 return;
-            } else {
-                Log.d(TAG, "Permission granted");
             }
         }
         startShareIntent(getImageUri());
@@ -230,14 +240,14 @@ public class LocationDetailFragment extends Fragment {
         shareIntent.setAction(Intent.ACTION_SEND);
         if (isDiscovered) {
             shareIntent.putExtra(Intent.EXTRA_TEXT,
-                    "I discovered this beautiful place: " +
+                    getString(R.string.share_discovered_locaion_text1) +
                             mKuldigaLocation.getDiscoveredName() +
-                            " using the Kuldiga Tour app");
+                            getString(R.string.share_discovered_locaion_text2));
         } else {
             shareIntent.putExtra(Intent.EXTRA_TEXT,
-                    "Help me find " +
+                    getString(R.string.share_hidden_locaion_text1) +
                             mKuldigaLocation.getHiddenName() +
-                            "in Kuldiga");
+                            getString(R.string.share_hidden_locaion_text2));
         }
         //set the type of the intent depending on if we can get the image
         if (imageUri != null) {
@@ -248,7 +258,7 @@ public class LocationDetailFragment extends Fragment {
         } else {
             shareIntent.setType("text/plain");
         }
-        startActivity(Intent.createChooser(shareIntent, "Share location"));
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.share_location)));
     }
 
     private Uri getImageUri() {
@@ -292,11 +302,15 @@ public class LocationDetailFragment extends Fragment {
 
     //This method gets called from the activity to update the texview with the distance
     public void updateDistanceTv(double distance){
-        distanceTv.setText("Distance: " + distance + " km");
-        if (distance < 0.03) {
-            setLocationAsDiscovered();
+        if (getActivity() != null) {
+            String text = getActivity().getResources().getString(R.string.distance_indication)
+                    + " " + distance + " " + getActivity().getResources().getString(R.string.km);
+            distanceTv.setText(text);
+            if (distance < 0.03) {
+                setLocationAsDiscovered();
+            }
+            refreshIconAnimation();
         }
-        refreshIconAnimation();
     }
 
     //Makes the refresh Icon rotate 180 indicating to the user that the distance has been updated

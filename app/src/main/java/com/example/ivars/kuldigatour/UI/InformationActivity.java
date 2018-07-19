@@ -31,14 +31,14 @@ public class InformationActivity extends AppCompatActivity {
         homePageLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openWebPageIntent("http://kuldiga.lv/en/");
+                openWebPageIntent(getString(R.string.kuldiga_web_page_url));
             }
         });
 
         wikipediaLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openWebPageIntent("https://en.wikipedia.org/wiki/Kuldīga");
+                openWebPageIntent(getString(R.string.kuldiga_wikipedia_url));
             }
         });
     }

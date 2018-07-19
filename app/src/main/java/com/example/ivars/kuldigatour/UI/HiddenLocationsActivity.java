@@ -55,7 +55,6 @@ public class HiddenLocationsActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_view);
         //if is discovered search shared pref for discovered locations otherwise search for hidden ones
@@ -77,16 +76,6 @@ public class HiddenLocationsActivity extends AppCompatActivity
                     findFragmentByTag(FRAGMENT_LIST_TAG);
             mLocationDetailFragment = (LocationDetailFragment) getSupportFragmentManager().
                     findFragmentByTag(FRAGMENT_DETAIL_TAG);
-            //todo remove
-//            if (savedInstanceState.containsKey("test1")){
-//                Log.d(TAG, "tast 1 exists");
-//                mHiddenLocationsListFragment = (LocationsListFragment)getSupportFragmentManager()
-//                        .getFragment(savedInstanceState, "test1");
-//            }
-//            if (savedInstanceState.containsKey("test2")){
-//                mLocationDetailFragment = (LocationDetailFragment)getSupportFragmentManager()
-//                        .getFragment(savedInstanceState, "test2");
-//            }
         }
         mLocationUtility = new LocationUtility(this, this);
         //Start receiving location updates
@@ -96,14 +85,12 @@ public class HiddenLocationsActivity extends AppCompatActivity
     //This is called when the location utility checks settings for location on the device
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult");
         //forward result to the locations utility
         mLocationUtility.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult()");
         switch (requestCode) {
             case REQUEST_LOCATION_PERMISSION:
                 //If request code is for location handle it in the LocationUtility
@@ -164,17 +151,14 @@ public class HiddenLocationsActivity extends AppCompatActivity
         lastKnownLocation = location;
         //Check which fragments exists for the update
         if (mLocationDetailFragment != null){
-            Log.d(TAG, "detail fragment exists");
             //If locations detail fragment is visible
             double distance = mLocationUtility.calculateDistance(locationOpenedInDetailFragment, location);
             mLocationDetailFragment.updateDistanceTv(distance);
         }
         if (mHiddenLocationsListFragment != null) {
-            Log.d(TAG, "list fragment exists");
             //Check if the list fragment's views have been initialized
             //This fixes crashing on orientation change in details fragment
             if (mHiddenLocationsListFragment.locationsRv != null) {
-                Log.d(TAG, "list fragment locationsRv exists");
                 //get list of all coordinates for KuldigaLocation objects in the visible list
                 ArrayList<String> coordinatesList = mHiddenLocationsListFragment.getAllLocationCoordinates();
                 //Distances are calculated in an asyncTask, because there might be an unknown number of them
@@ -215,7 +199,6 @@ public class HiddenLocationsActivity extends AppCompatActivity
 
         @Override
         protected ArrayList<Double> doInBackground(Object... params) {
-            Log.d(TAG, "AsyncTask start");
             //The firs parameter is the list of coordinate strings
             ArrayList<String> coordinatesList = (ArrayList<String>)params[0];
             //The list in which the result will be returned as doubles
@@ -235,7 +218,6 @@ public class HiddenLocationsActivity extends AppCompatActivity
             for (int i = 0; i < numberOfCoordinates; i++){
                 //go through all the coordinates and calculate the distances
                 distanceList.add(activity.mLocationUtility.calculateDistance(coordinatesList.get(i),location));
-                Log.d(TAG, "Distances list: "+ distanceList.get(i));
             }
             return distanceList;
         }
@@ -246,10 +228,10 @@ public class HiddenLocationsActivity extends AppCompatActivity
             if (activity == null || activity.isFinishing()){
                 return;
             }
-            Log.d(TAG, "AsyncTask end");
-            //TODO: check if the fragment exists
             //update the distances in the hidden locationsList fragment
-            activity.mHiddenLocationsListFragment.updateDistancesInList(distances);
+            if (activity.mHiddenLocationsListFragment != null) {
+                activity.mHiddenLocationsListFragment.updateDistancesInList(distances);
+            }
         }
     }
 
@@ -263,26 +245,6 @@ public class HiddenLocationsActivity extends AppCompatActivity
     @Override
     public void differentLocationState(int locationState) {
         mCurrentLocationAvailability = locationState;
-
-        //TODO: test if this is really not necessary
-        /*
-        String locationDistanceMessage;
-        switch (locationState){
-            case LocationUtility.LOCATION_NOT_AVAILABLE_STATE:
-                locationDistanceMessage = "Enable location permission in settings to see distance to location";
-                break;
-            case LocationUtility.LOCATION_PENDING_STATE:
-                locationDistanceMessage = "Getting distance...";
-                break;
-            default:
-                locationDistanceMessage = "Error";
-                Log.e(TAG, "Unknown location state message from locationsUtility");
-                break;
-        }
-        if (mLocationDetailFragment != null){
-            mLocationDetailFragment.setDistanceTv(locationDistanceMessage);
-        }
-        */
     }
 
     //This gets called from the details fragment on initialization
@@ -303,14 +265,6 @@ public class HiddenLocationsActivity extends AppCompatActivity
         if (locationOpenedInDetailFragment != null) {
             outState.putSerializable(STATE_OPENED_KULDIGA_LOCATION, locationOpenedInDetailFragment);
         }
-
-        //TODO: remove
-//        if (mHiddenLocationsListFragment != null){
-//            getSupportFragmentManager().putFragment(outState, "test1", mHiddenLocationsListFragment);
-//        }
-//        if (mLocationDetailFragment != null){
-//            getSupportFragmentManager().putFragment(outState, "test2", mLocationDetailFragment);
-//        }
     }
 
     @Override
@@ -325,7 +279,5 @@ public class HiddenLocationsActivity extends AppCompatActivity
             locationOpenedInDetailFragment = (KuldigaLocation) savedInstanceState
                     .getSerializable(STATE_OPENED_KULDIGA_LOCATION);
         }
-
-
     }
 }

@@ -5,16 +5,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.ivars.kuldigatour.LocationWidgetProvider;
@@ -32,6 +30,9 @@ public class MainMenuActivity extends AppCompatActivity {
     //shared preference for storing the number of locations found
     private static final String NUM_LOCATIONS_DISCOVERED_KEY = "number_of_locations_discovered";
     private static final String ADD_MOB_APP_ID = "ca-app-pub-3258699015124264~4246323818";
+    private static final String SHARED_PREFS_NAME = "Kuldiga_tour_app_shared_preferences";
+    //Number of items available in the FB db. Would be better to get this from FB istself
+    private static final int NUMBER_OF_ITEMS_IN_DB = 10;
 
     @BindView(R.id.main_menu_discoverd_loc_btn)
     Button mDiscoveredLocBtn;
@@ -41,6 +42,8 @@ public class MainMenuActivity extends AppCompatActivity {
     Button mInfoButton;
     @BindView(R.id.main_menu_score_tv)
     TextView scoreTv;
+    @BindView(R.id.main_menu_sv)
+    ScrollView mainMenuSv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,24 +88,6 @@ public class MainMenuActivity extends AppCompatActivity {
         updateScoreText();
     }
 
-    //Permission request results
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
-            case LOCATION_PERMISSION_REQUEST_CODE:
-                //TODO: display appropriate messages here
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    //permission was granted
-                } else {
-                    //permission denied
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -114,8 +99,7 @@ public class MainMenuActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_reset_locations:
-                Log.d(TAG, "action_reset_locations reset_locations");
-                SharedPreferences sharedPreferences = getSharedPreferences("Kuldiga_your_prefs", Context.MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.clear().commit();
                 updateScoreText();
@@ -126,10 +110,11 @@ public class MainMenuActivity extends AppCompatActivity {
     }
 
     private void updateScoreText() {
-        SharedPreferences sharedPreferences = getSharedPreferences("Kuldiga_your_prefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
         //Update the number of items discovered
         int numDiscoveredLocations = sharedPreferences.getInt(NUM_LOCATIONS_DISCOVERED_KEY, 0);
-        scoreTv.setText(numDiscoveredLocations + "/10");
+        String text = numDiscoveredLocations + "/" + NUMBER_OF_ITEMS_IN_DB;
+        scoreTv.setText(text);
     }
 
     private void updateWidget() {

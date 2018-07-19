@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,9 +45,7 @@ public class LocationsListFragment extends Fragment
     private static final int SCROLL_TO_STORED_POSITION_DELAY_MS = 200;
     //Number of items available in the FB db. Would be better to get this from FB istself
     private static final int NUMBER_OF_ITEMS_IN_DB = 10;
-    //STATIC variables which save the recyclerView position for restoring when returning to the list
-    //A variable to store the last position of the recycler view
-    private static int lastFirstVisiblePosition = -1;
+    private static final String FIREBASE_CHILD_DB_NAME = "Locations";
 
     //Helps us access the DB in general
     private FirebaseDatabase mFireBaseDb;
@@ -83,7 +80,6 @@ public class LocationsListFragment extends Fragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.d(TAG, "onAttach");
         //Make sure the host implements the callback
         try{
             mCallback = (LocationItemClickListener) context;
@@ -98,18 +94,10 @@ public class LocationsListFragment extends Fragment
     public LocationsListFragment() {
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate");
-    }
-
     //Similar to onCreate for an activity
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView");
-
         final View rootView = inflater.inflate(R.layout.fragment_locations_list, container, false);
         ButterKnife.bind(this, rootView);
 
@@ -120,8 +108,6 @@ public class LocationsListFragment extends Fragment
         if (isDiscoveredList == null) {
             isDiscoveredList = getArguments().getBoolean(DISCOVERED_LIST_SELECTED_INTENT_KEY, false);
         }
-
-        Log.d(TAG, "is discovered list: " + isDiscoveredList);
 
         //get the interface
         detailsFragmentCallback = (ListFragmentsInterface) getActivity();
@@ -143,7 +129,7 @@ public class LocationsListFragment extends Fragment
         locationsRv.setAdapter(mLocationAdapter);
 
         mFireBaseDb = FirebaseDatabase.getInstance();
-        mLocationsDbRef = mFireBaseDb.getReference().child("Locations");
+        mLocationsDbRef = mFireBaseDb.getReference().child(FIREBASE_CHILD_DB_NAME);
 
         mChildEventListener = new ChildEventListener() {
             //Triggered for every child message when the listener is attached
@@ -155,12 +141,10 @@ public class LocationsListFragment extends Fragment
                 KuldigaLocation kuldigaLocation = dataSnapshot.getValue(KuldigaLocation.class);
                 //add discovered locations to the discovered list and hidden to hidden list
                 if (LocationUtility.isLocationDiscovered(kuldigaLocation, getActivity())) {
-                    Log.d(TAG, "This location is discovered in preferences");
                     mKuldigaDiscoveredLocationList.add(kuldigaLocation);
                     //make the activity calculate distances when a new object to the list gets added
                     detailsFragmentCallback.calculatePreviousLocation();
                 } else {
-                    Log.d(TAG, "This location is NOT discovered in preferences");
                     mKuldigaHiddenLocationList.add(kuldigaLocation);
                     //make the activity calculate distances when a new object to the list gets added
                     detailsFragmentCallback.calculatePreviousLocation();
@@ -219,7 +203,7 @@ public class LocationsListFragment extends Fragment
             if (mKuldigaDiscoveredLocationList.size() <= 0) {
                 //If the discovered list is empty show text indicating that
                 emptyListTv.setVisibility(View.VISIBLE);
-                emptyListTv.setText("There are no discovered locations\nSee the hidden locations list");
+                emptyListTv.setText(R.string.no_discovered_locations_text);
             } else {
                 emptyListTv.setVisibility(View.INVISIBLE);
             }
@@ -228,7 +212,7 @@ public class LocationsListFragment extends Fragment
             if (mKuldigaHiddenLocationList.size() <= 0) {
                 //If the hidden list is empty show text indicating that
                 emptyListTv.setVisibility(View.VISIBLE);
-                emptyListTv.setText("Congratulations, all locations found!\nReset all locations to hidden from the main menu");
+                emptyListTv.setText(R.string.no_hidden_locations_text);
             } else {
                 emptyListTv.setVisibility(View.INVISIBLE);
             }
@@ -238,9 +222,9 @@ public class LocationsListFragment extends Fragment
     private void setUpToolbar(boolean isDiscoveredList) {
         //Set the title in the toolbar depending on the list
         if (isDiscoveredList) {
-            toolbar.setTitle("Discovered list");
+            toolbar.setTitle(R.string.discovered_list);
         } else {
-            toolbar.setTitle("Hidden list");
+            toolbar.setTitle(R.string.hidden_list);
         }
         ((HiddenLocationsActivity) getActivity()).setSupportActionBar(toolbar);
         ((HiddenLocationsActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -270,7 +254,6 @@ public class LocationsListFragment extends Fragment
         } else {
             numberOfItemsInList = mKuldigaHiddenLocationList.size();
         }
-        Log.d(TAG, "getAllLocationCoordinates() nr of: " + numberOfItemsInList);
         for (int i = 0; i < numberOfItemsInList; i++){
             KuldigaLocation location;
             if (isDiscoveredList) {
@@ -279,7 +262,6 @@ public class LocationsListFragment extends Fragment
                 location = mKuldigaHiddenLocationList.get(i);
             }
             coordinatesList.add(location.getCoordinates());
-            Log.d("TEST", location.getCoordinates());
         }
 
         return coordinatesList;
@@ -290,7 +272,6 @@ public class LocationsListFragment extends Fragment
         //It is possible that more locations have been found after the coordinates list is created
         //That is why distancesList is checked for size and not mKuldigaDiscoveredLocationList
         int numberOfItems = distancesList.size();
-        Log.d(TAG, "updateDistancesInList number of items:" + numberOfItems);
         for (int i = 0; i < numberOfItems; i++){
             if (isDiscoveredList) {
                 mKuldigaDiscoveredLocationList.get(i).setDistance(distancesList.get(i));
@@ -310,7 +291,6 @@ public class LocationsListFragment extends Fragment
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_switch_lists:
-                Log.d(TAG, "onOptionsItemSelected switch_lists");
                 switchDisplayedList();
                 break;
         }
@@ -320,10 +300,10 @@ public class LocationsListFragment extends Fragment
     //Change if the hidden or discovered locations are displayed
     private void switchDisplayedList() {
         if (isDiscoveredList) {
-            toolbar.setTitle("Hidden list");
+            toolbar.setTitle(R.string.discovered_list);
             mLocationAdapter.changeList(mKuldigaHiddenLocationList);
         } else {
-            toolbar.setTitle("Discovered list");
+            toolbar.setTitle(R.string.hidden_list);
             mLocationAdapter.changeList(mKuldigaDiscoveredLocationList);
         }
         isDiscoveredList = !isDiscoveredList;
@@ -335,15 +315,12 @@ public class LocationsListFragment extends Fragment
 
     @Override
     public void onPause() {
-        Log.d(TAG, "onPause");
         super.onPause();
-        lastFirstVisiblePosition = ((LinearLayoutManager) locationsRv.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
         rvState = locationsRv.getLayoutManager().onSaveInstanceState();
     }
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume");
         super.onResume();
         //restoreRecyclerViewScrollPosition();
     }
@@ -353,9 +330,7 @@ public class LocationsListFragment extends Fragment
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        Log.d(TAG, "onViewStateRestored");
         if (rvState != null) {
-            Log.d(TAG, "Saved state != null");
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -364,25 +339,16 @@ public class LocationsListFragment extends Fragment
                     locationsRv.getLayoutManager().onRestoreInstanceState(rvState);
                 }
             }, SCROLL_TO_STORED_POSITION_DELAY_MS);
-        } else {
-            Log.d(TAG, "Saved state == null");
         }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        Log.d(TAG, "onSaveInstanceState");
         super.onSaveInstanceState(outState);
         //save the state of the recyclerView
         outState.putParcelable(RECYCLER_VIEW_STATE_KEY, locationsRv.getLayoutManager().onSaveInstanceState());
         //Save the list type opened
         outState.putBoolean(LIST_TYPE_STATE_KEY, isDiscoveredList);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        Log.d(TAG, "onActivityCreated");
     }
 
     interface ListFragmentsInterface {

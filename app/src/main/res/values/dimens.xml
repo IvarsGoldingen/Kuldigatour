@@ -1,17 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--Main menu button dimens-->
+
     <dimen name="main_menu_button_width">250dp</dimen>
+    <dimen name="main_menu_button_width_landscape">150dp</dimen>
+    <dimen name="main_menu_button_height_landscape">80dp</dimen>
     <dimen name="main_menu_button_margin">10dp</dimen>
     <dimen name="main_menu_button_text_size">18sp</dimen>
 
-    <!--detail fragment dimens-->
     <dimen name="side_margin_detail_view">6dp</dimen>
     <dimen name="refresh_icon_start_size">36dp</dimen>
 
-    <!--
-Refer to App Widget Documentation for margin information
-http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
-    -->
+    <!--Widget-->
     <dimen name="widget_margin">8dp</dimen>
+
+
+    <dimen name="information_menu_margin">4dp</dimen>
+    <dimen name="information_menu_title_size">28sp</dimen>
+    <dimen name="regular_body_text_size">18sp</dimen>
+    <dimen name="link_icon_size">56dp</dimen>
+    <dimen name="bigger_body_text_size">20sp</dimen>
+    <dimen name="main_menu_logo_height">200dp</dimen>
+    <dimen name="main_menu_logo_padding">20dp</dimen>
+    <dimen name="subtitle_text_size">24sp</dimen>
+    <dimen name="detail_view_app_bar_height">300dp</dimen>
+    <dimen name="gap_between_distance_and_refresh_icon">10dp</dimen>
+    <dimen name="fab_layout_margin">20dp</dimen>
+    <dimen name="fab_size">56dp</dimen>
+    <dimen name="empty_list_text_margin">16dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_corner_radius">4dp</dimen>
+    <dimen name="card_margin">4dp</dimen>
+    <dimen name="card_height">112dp</dimen>
+    <dimen name="card_image_size">100dp</dimen>
+    <dimen name="card_image_margin">6dp</dimen>
+    <dimen name="widget_score_margin">8dp</dimen>
 </resources>
