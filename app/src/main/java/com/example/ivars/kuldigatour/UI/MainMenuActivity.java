@@ -26,7 +26,6 @@ public class MainMenuActivity extends AppCompatActivity {
 
     private static final String TAG = MainMenuActivity.class.getSimpleName();
     private static final String DISCOVERED_LIST_SELECTED_KEY = "discovered_list_key";
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     //shared preference for storing the number of locations found
     private static final String NUM_LOCATIONS_DISCOVERED_KEY = "number_of_locations_discovered";
     private static final String ADD_MOB_APP_ID = "ca-app-pub-3258699015124264~4246323818";

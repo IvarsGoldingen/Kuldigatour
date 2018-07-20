@@ -23,7 +23,7 @@ public class HiddenLocationsActivity extends AppCompatActivity
         implements LocationsListFragment.LocationItemClickListener,
         LocationUtility.LocationInterface,
         LocationDetailFragment.DetailFragmentInterface,
-        LocationsListFragment.ListFragmentsInterface{
+        LocationsListFragment.ListFragmentsInterface {
 
     private static final String TAG = HiddenLocationsActivity.class.getSimpleName();
     private static final String DISCOVERED_LIST_SELECTED_KEY = "discovered_list_key";
@@ -123,7 +123,7 @@ public class HiddenLocationsActivity extends AppCompatActivity
         args.putString(KuldigaLocation.HIDDEN_SMALL_IMAGE_KEY, kuldigaLocation.getHiddenSmallImageUrl());
         args.putString(KuldigaLocation.HIDDEN_LARGE_IMAGE_KEY, kuldigaLocation.getHiddenLargeImageUrl());
 
-        if (kuldigaLocation.getDistance() != null){
+        if (kuldigaLocation.getDistance() != null) {
             //if distance has been calculated in the list pass it to the detail fragment
             args.putDouble(KuldigaLocation.DISTANCE_KEY, kuldigaLocation.getDistance());
         }
@@ -139,7 +139,7 @@ public class HiddenLocationsActivity extends AppCompatActivity
                 FRAGMENT_DETAIL_TAG).commit();
     }
 
-    private void showSnackBarMessage(String text){
+    private void showSnackBarMessage(String text) {
         Snackbar snackbar = Snackbar.make(findViewById(R.id.locations_container), text, Snackbar.LENGTH_SHORT);
         snackbar.show();
     }
@@ -150,7 +150,7 @@ public class HiddenLocationsActivity extends AppCompatActivity
         //Save the last known location to have it available when returning from detail to list view
         lastKnownLocation = location;
         //Check which fragments exists for the update
-        if (mLocationDetailFragment != null){
+        if (mLocationDetailFragment != null) {
             //If locations detail fragment is visible
             double distance = mLocationUtility.calculateDistance(locationOpenedInDetailFragment, location);
             mLocationDetailFragment.updateDistanceTv(distance);
@@ -169,11 +169,11 @@ public class HiddenLocationsActivity extends AppCompatActivity
     }
 
     /*
-    * Method called from list fragment when a new location gets added from firebase
-    * Makes the activity calculate distances from the previously received location
+     * Method called from list fragment when a new location gets added from firebase
+     * Makes the activity calculate distances from the previously received location
      * Gets distances for the list from the previously gotten location
      *check if the previous locatin was saved
-    * */
+     * */
     @Override
     public void calculatePreviousLocation() {
         if (lastKnownLocation != null && mHiddenLocationsListFragment != null) {
@@ -186,53 +186,6 @@ public class HiddenLocationsActivity extends AppCompatActivity
     @Override
     public void listTypeChanged(boolean isDiscoveredList) {
         this.isDiscoveredList = isDiscoveredList;
-    }
-
-    //Calculated the distances to locations from String coordinates
-    private static class CalculateDistancesTask extends AsyncTask<Object,Void, ArrayList<Double>>{
-
-        private WeakReference<HiddenLocationsActivity> activityWeakReference;
-
-        public CalculateDistancesTask(HiddenLocationsActivity activity) {
-            this.activityWeakReference = new WeakReference<>(activity);
-        }
-
-        @Override
-        protected ArrayList<Double> doInBackground(Object... params) {
-            //The firs parameter is the list of coordinate strings
-            ArrayList<String> coordinatesList = (ArrayList<String>)params[0];
-            //The list in which the result will be returned as doubles
-            ArrayList<Double> distanceList = new ArrayList<>();
-            //Number of coordinates in the list
-            int numberOfCoordinates = coordinatesList.size();
-            //The location object will be the second parameter
-            Location location = (Location)params[1];
-
-            //get the reference to the activity
-            HiddenLocationsActivity activity = activityWeakReference.get();
-            if (activity == null || activity.isFinishing()){
-                return null;
-            }
-
-            //go through all items and calculate distance
-            for (int i = 0; i < numberOfCoordinates; i++){
-                //go through all the coordinates and calculate the distances
-                distanceList.add(activity.mLocationUtility.calculateDistance(coordinatesList.get(i),location));
-            }
-            return distanceList;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Double> distances) {
-            HiddenLocationsActivity activity = activityWeakReference.get();
-            if (activity == null || activity.isFinishing()){
-                return;
-            }
-            //update the distances in the hidden locationsList fragment
-            if (activity.mHiddenLocationsListFragment != null) {
-                activity.mHiddenLocationsListFragment.updateDistancesInList(distances);
-            }
-        }
     }
 
     //Error message from location utility
@@ -252,7 +205,6 @@ public class HiddenLocationsActivity extends AppCompatActivity
     public int getLocationUtilitiesState() {
         return mCurrentLocationAvailability;
     }
-
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -278,6 +230,53 @@ public class HiddenLocationsActivity extends AppCompatActivity
         if (savedInstanceState.containsKey(STATE_OPENED_KULDIGA_LOCATION)) {
             locationOpenedInDetailFragment = (KuldigaLocation) savedInstanceState
                     .getSerializable(STATE_OPENED_KULDIGA_LOCATION);
+        }
+    }
+
+    //Calculated the distances to locations from String coordinates
+    private static class CalculateDistancesTask extends AsyncTask<Object, Void, ArrayList<Double>> {
+
+        private WeakReference<HiddenLocationsActivity> activityWeakReference;
+
+        public CalculateDistancesTask(HiddenLocationsActivity activity) {
+            this.activityWeakReference = new WeakReference<>(activity);
+        }
+
+        @Override
+        protected ArrayList<Double> doInBackground(Object... params) {
+            //The firs parameter is the list of coordinate strings
+            ArrayList<String> coordinatesList = (ArrayList<String>) params[0];
+            //The list in which the result will be returned as doubles
+            ArrayList<Double> distanceList = new ArrayList<>();
+            //Number of coordinates in the list
+            int numberOfCoordinates = coordinatesList.size();
+            //The location object will be the second parameter
+            Location location = (Location) params[1];
+
+            //get the reference to the activity
+            HiddenLocationsActivity activity = activityWeakReference.get();
+            if (activity == null || activity.isFinishing()) {
+                return null;
+            }
+
+            //go through all items and calculate distance
+            for (int i = 0; i < numberOfCoordinates; i++) {
+                //go through all the coordinates and calculate the distances
+                distanceList.add(activity.mLocationUtility.calculateDistance(coordinatesList.get(i), location));
+            }
+            return distanceList;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Double> distances) {
+            HiddenLocationsActivity activity = activityWeakReference.get();
+            if (activity == null || activity.isFinishing()) {
+                return;
+            }
+            //update the distances in the hidden locationsList fragment
+            if (activity.mHiddenLocationsListFragment != null) {
+                activity.mHiddenLocationsListFragment.updateDistancesInList(distances);
+            }
         }
     }
 }

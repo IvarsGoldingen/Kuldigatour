@@ -35,7 +35,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class LocationsListFragment extends Fragment
-    implements LocationAdapter.LocationListItemClickListener{
+        implements LocationAdapter.LocationListItemClickListener {
 
     private static final String TAG = LocationsListFragment.class.getSimpleName();
     private static final String DISCOVERED_LIST_SELECTED_INTENT_KEY = "discovered_list_key";
@@ -46,52 +46,45 @@ public class LocationsListFragment extends Fragment
     //Number of items available in the FB db. Would be better to get this from FB istself
     private static final int NUMBER_OF_ITEMS_IN_DB = 10;
     private static final String FIREBASE_CHILD_DB_NAME = "Locations";
-
+    @BindView(R.id.list_fragment_toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.empty_list_tv)
+    TextView emptyListTv;
+    @BindView(R.id.list_progress_bar)
+    ProgressBar listProgressBar;
+    @BindView(R.id.hidden_locations_rv)
+    RecyclerView locationsRv;
+    private Parcelable rvState;
+    private ListFragmentsInterface detailsFragmentCallback;
     //Helps us access the DB in general
     private FirebaseDatabase mFireBaseDb;
     //Helps us access the specific locations DB
     private DatabaseReference mLocationsDbRef;
     //Used to read from the DB
     private ChildEventListener mChildEventListener;
-
     private LocationAdapter mLocationAdapter;
-    //A variable to store how many items were in the list the previous time it was opened
-    private static int numberOfItemsInList = -1;
-    Parcelable rvState;
-    @BindView(R.id.list_fragment_toolbar)
-    Toolbar toolbar;
-
     //Interface to pass the clicks to the activity
     private LocationItemClickListener mCallback;
-    @BindView(R.id.empty_list_tv)
-    TextView emptyListTv;
-    @BindView(R.id.list_progress_bar)
-    ProgressBar listProgressBar;
     private ArrayList<KuldigaLocation> mKuldigaDiscoveredLocationList;
-
-    @BindView(R.id.hidden_locations_rv)
-    RecyclerView locationsRv;
     private ArrayList<KuldigaLocation> mKuldigaHiddenLocationList;
     private Boolean isDiscoveredList;
     //VARIABLE TO CHECK WHEN ALL LOCATIONS HAVE BEEN DOWNLOADED FROM FBdb
     private int loacationsDownloaded = 0;
+
+    //obligatory empty constructor
+    public LocationsListFragment() {
+    }
 
     //Called when a fragment is first attached to its context.
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         //Make sure the host implements the callback
-        try{
+        try {
             mCallback = (LocationItemClickListener) context;
-        } catch (ClassCastException e){
+        } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement OnItemClickListener");
         }
-    }
-
-    ListFragmentsInterface detailsFragmentCallback;
-
-    //obligatory empty constructor
-    public LocationsListFragment() {
     }
 
     //Similar to onCreate for an activity
@@ -240,12 +233,8 @@ public class LocationsListFragment extends Fragment
         }
     }
 
-    public interface LocationItemClickListener {
-        void onLocationClicked(KuldigaLocation kuldigaLocation);
-    }
-
     //Pass all location coordinates to the activity from the list of Locations
-    public ArrayList<String> getAllLocationCoordinates(){
+    public ArrayList<String> getAllLocationCoordinates() {
         //go through all locations currently in the list and pass them to the activity
         ArrayList<String> coordinatesList = new ArrayList<>();
         int numberOfItemsInList;
@@ -254,7 +243,7 @@ public class LocationsListFragment extends Fragment
         } else {
             numberOfItemsInList = mKuldigaHiddenLocationList.size();
         }
-        for (int i = 0; i < numberOfItemsInList; i++){
+        for (int i = 0; i < numberOfItemsInList; i++) {
             KuldigaLocation location;
             if (isDiscoveredList) {
                 location = mKuldigaDiscoveredLocationList.get(i);
@@ -268,11 +257,11 @@ public class LocationsListFragment extends Fragment
     }
 
     //Update all list items with the distance to location
-    public void updateDistancesInList (ArrayList<Double> distancesList){
+    public void updateDistancesInList(ArrayList<Double> distancesList) {
         //It is possible that more locations have been found after the coordinates list is created
         //That is why distancesList is checked for size and not mKuldigaDiscoveredLocationList
         int numberOfItems = distancesList.size();
-        for (int i = 0; i < numberOfItems; i++){
+        for (int i = 0; i < numberOfItems; i++) {
             if (isDiscoveredList) {
                 mKuldigaDiscoveredLocationList.get(i).setDistance(distancesList.get(i));
             } else {
@@ -320,14 +309,6 @@ public class LocationsListFragment extends Fragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        //restoreRecyclerViewScrollPosition();
-    }
-
-    //RECYCLER_VIEW_STATE_KEY
-
-    @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (rvState != null) {
@@ -342,6 +323,8 @@ public class LocationsListFragment extends Fragment
         }
     }
 
+    //RECYCLER_VIEW_STATE_KEY
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -349,6 +332,10 @@ public class LocationsListFragment extends Fragment
         outState.putParcelable(RECYCLER_VIEW_STATE_KEY, locationsRv.getLayoutManager().onSaveInstanceState());
         //Save the list type opened
         outState.putBoolean(LIST_TYPE_STATE_KEY, isDiscoveredList);
+    }
+
+    public interface LocationItemClickListener {
+        void onLocationClicked(KuldigaLocation kuldigaLocation);
     }
 
     interface ListFragmentsInterface {

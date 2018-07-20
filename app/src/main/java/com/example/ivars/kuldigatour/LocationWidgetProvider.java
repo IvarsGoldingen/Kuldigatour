@@ -20,8 +20,8 @@ public class LocationWidgetProvider extends AppWidgetProvider {
     private static final String SHARED_PREFS_NAME = "Kuldiga_tour_app_shared_preferences";
     private static final int NUMBER_OF_ITEMS_IN_DB = 10;
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
+    private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
+                                        int appWidgetId) {
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.location_widget_provider);
         //

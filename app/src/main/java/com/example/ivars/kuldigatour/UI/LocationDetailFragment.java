@@ -52,14 +52,11 @@ public class LocationDetailFragment extends Fragment {
     //Test adds ID
     private static final String ADD_MOB_APP_ID = "ca-app-pub-3940256099942544/1033173712";
     private static final String LOCATION_TYPE_STATE = "location_type_key";
-
-
+    private static final String TAG = LocationDetailFragment.class.getSimpleName();
     @BindView(R.id.hidden_detail_iv)
     ImageView locationIv;
     @BindView(R.id.detail_description_tv)
     TextView descriptionTv;
-
-
     @BindView(R.id.detail_distance_tv)
     TextView distanceTv;
     @BindView(R.id.detail_view_refresh_icon)
@@ -72,16 +69,10 @@ public class LocationDetailFragment extends Fragment {
     FloatingActionButton shareFab;
     @BindView(R.id.detail_view_container)
     CoordinatorLayout detailViewCl;
-
-    private static final String TAG = LocationDetailFragment.class.getSimpleName();
-    Boolean isDiscovered;
+    private Boolean isDiscovered;
+    private DetailFragmentInterface detailFragmentsCallback;
     private KuldigaLocation mKuldigaLocation = null;
     private InterstitialAd mInterstitialAd;
-
-    DetailFragmentInterface detailFragmentsCallback;
-    interface DetailFragmentInterface{
-        int getLocationUtilitiesState();
-    }
 
     public LocationDetailFragment() {
     }
@@ -91,8 +82,6 @@ public class LocationDetailFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putBoolean(LOCATION_TYPE_STATE, isDiscovered);
     }
-
-
 
     @SuppressLint("MissingPermission")
     @Nullable
@@ -125,7 +114,7 @@ public class LocationDetailFragment extends Fragment {
             }
         }
 
-        if (isDiscovered){
+        if (isDiscovered) {
             //if location discovered, show discovered atributes
             setUiWithDiscovereAtributes();
         } else {
@@ -136,7 +125,7 @@ public class LocationDetailFragment extends Fragment {
         }
         collapsingToolbar.setExpandedTitleTextAppearance(R.style.CollapsedAppBarTextStyle);
         //check if distance was calculated in the list fragment
-        if (getArguments().containsKey(KuldigaLocation.DISTANCE_KEY)){
+        if (getArguments().containsKey(KuldigaLocation.DISTANCE_KEY)) {
             double distance = getArguments().getDouble(KuldigaLocation.DISTANCE_KEY);
             String text = getActivity().getResources().getString(R.string.distance_indication)
                     + " " + distance + " " + getActivity().getResources().getString(R.string.km);
@@ -145,9 +134,9 @@ public class LocationDetailFragment extends Fragment {
             // if the distance was not passed from the list fragment determine what message
             //should be displayed
             //Get the state of utility and show the appropriate message to user
-            detailFragmentsCallback = (DetailFragmentInterface)getActivity();
+            detailFragmentsCallback = (DetailFragmentInterface) getActivity();
             int state = detailFragmentsCallback.getLocationUtilitiesState();
-            switch (state){
+            switch (state) {
                 case LocationUtility.LOCATION_AVAILABLE_STATE:
                     distanceTv.setText(R.string.Getting_dstance_state);
                     break;
@@ -274,7 +263,6 @@ public class LocationDetailFragment extends Fragment {
         return uri;
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -289,7 +277,6 @@ public class LocationDetailFragment extends Fragment {
                     // permission denied, share without image Uri
                     startShareIntent(null);
                 }
-                return;
             }
         }
     }
@@ -301,7 +288,7 @@ public class LocationDetailFragment extends Fragment {
     }
 
     //This method gets called from the activity to update the texview with the distance
-    public void updateDistanceTv(double distance){
+    public void updateDistanceTv(double distance) {
         if (getActivity() != null) {
             String text = getActivity().getResources().getString(R.string.distance_indication)
                     + " " + distance + " " + getActivity().getResources().getString(R.string.km);
@@ -335,6 +322,10 @@ public class LocationDetailFragment extends Fragment {
                 break;
         }
         return false;
+    }
+
+    interface DetailFragmentInterface {
+        int getLocationUtilitiesState();
     }
 
 }

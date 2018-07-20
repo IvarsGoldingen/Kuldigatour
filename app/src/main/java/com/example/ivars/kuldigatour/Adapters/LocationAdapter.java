@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocationAdapterViewHolder>{
+public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocationAdapterViewHolder> {
 
     private static final String TAG = LocationAdapter.class.getSimpleName();
 
@@ -28,14 +28,10 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     private boolean isDiscoveredList;
     private LocationListItemClickListener mOnClickListener;
 
-    public interface LocationListItemClickListener{
-        void OnLocationClickListener(int clickedLocation);
-    }
-
     public LocationAdapter(Context context,
                            boolean isDiscoveredList,
                            ArrayList<KuldigaLocation> list,
-                           LocationListItemClickListener listener){
+                           LocationListItemClickListener listener) {
         mContext = context;
         mLocationsList = list;
         this.isDiscoveredList = isDiscoveredList;
@@ -53,7 +49,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     @Override
     public void onBindViewHolder(@NonNull LocationAdapterViewHolder holder, int position) {
         KuldigaLocation currentKuldigaLocation = mLocationsList.get(position);
-        if (isDiscoveredList){
+        if (isDiscoveredList) {
             //displaying the discovered atributes
             holder.listDescriptionTv.setText(currentKuldigaLocation.getDiscoveredDescription());
             holder.listTitleTv.setText(currentKuldigaLocation.getDiscoveredName());
@@ -78,7 +74,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         }
 
         //set the distance for both lists
-        if (currentKuldigaLocation.getDistance() != null){
+        if (currentKuldigaLocation.getDistance() != null) {
             String text = currentKuldigaLocation.getDistance() + "\n"
                     + mContext.getResources().getString(R.string.km);
             holder.listDistanceToTv.setText(text);
@@ -90,10 +86,9 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
 
     }
 
-
     @Override
     public int getItemCount() {
-        if (mLocationsList != null){
+        if (mLocationsList != null) {
             return mLocationsList.size();
         }
         return 0;
@@ -105,7 +100,11 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         isDiscoveredList = !isDiscoveredList;
     }
 
-    class LocationAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public interface LocationListItemClickListener {
+        void OnLocationClickListener(int clickedLocation);
+    }
+
+    class LocationAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.hidden_list_title_tv)
         TextView listTitleTv;

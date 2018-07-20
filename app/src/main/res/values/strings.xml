@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Kuldiga tour</string>
-    <string name="appwidget_text">EXAMPLE</string>
-    <string name="add_widget">Add widget</string>
     <string name="information_menu_title">App info</string>
     <string name="information_menu_text">Use this app to discover different locations in Kuldiga. A hint picture and distance to the location is displayed in the hidden list. Distances to locations are updated automatically about every 10 seconds. Use this to find the location. Open the location you want form the hidden locations list and when you are close enough, it will become discovered and more information about that place will be displayed. If you do not want to actually go to a place, you can discover it using the options menu on the upper right corner of each location. You can reset you score from the Main menu\'s options menu.</string>
     <string name="information_menu_title_more_info">More info on Kuldiga</string>
@@ -17,11 +15,11 @@
     <string name="switch_lists">Switch lists</string>
     <string name="reset_found_locations">Reset found locations</string>
     <string name="km">km</string>
-    <string name="no_distance_placeholder">...</string>
+    <string name="no_distance_placeholder">…</string>
     <string name="kuldiga_web_page_url">http://kuldiga.lv/en/</string>
     <string name="kuldiga_wikipedia_url">https://en.wikipedia.org/wiki/Kuldīga</string>
     <string name="distance_indication">Distance:</string>
-    <string name="Getting_dstance_state">Getting distance...</string>
+    <string name="Getting_dstance_state">Getting distance…</string>
     <string name="enable_permissions_text">Enable location permission in settings to see distance to location</string>
     <string name="location_found">Location found</string>
     <string name="share_discovered_locaion_text1">I discovered this beautiful place:</string>

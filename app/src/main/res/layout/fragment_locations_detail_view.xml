@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/detail_view_container"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
@@ -41,8 +41,8 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -65,8 +65,8 @@
                     android:layout_marginEnd="@dimen/gap_between_distance_and_refresh_icon"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/bigger_body_text_size"
-                    tools:text="10 km to kuldigaLocation"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:text="10 km to kuldigaLocation" />
 
                 <ImageView
                     android:id="@+id/detail_view_refresh_icon"
@@ -81,12 +81,12 @@
                 android:id="@+id/detail_description_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/regular_body_text_size"
                 android:layout_marginLeft="@dimen/side_margin_detail_view"
                 android:layout_marginRight="@dimen/side_margin_detail_view"
-                tools:text="Description"
-                app:layout_constraintTop_toBottomOf="@+id/detail_distance_tv" />
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/regular_body_text_size"
+                app:layout_constraintTop_toBottomOf="@+id/detail_distance_tv"
+                tools:text="Description" />
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
@@ -95,7 +95,7 @@
         android:layout_width="@dimen/fab_size"
         android:layout_height="@dimen/fab_size"
         android:layout_margin="@dimen/fab_layout_margin"
-        app:layout_anchor="@id/appBar"
         android:src="@drawable/ic_share_black_48dp"
+        app:layout_anchor="@id/appBar"
         app:layout_anchorGravity="bottom|end" />
 </android.support.design.widget.CoordinatorLayout>

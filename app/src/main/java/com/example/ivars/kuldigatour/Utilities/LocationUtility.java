@@ -36,8 +36,14 @@ import com.google.android.gms.tasks.Task;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class LocationUtility{
+public class LocationUtility {
 
+    //States for location availibility
+    public static final int LOCATION_AVAILABLE_STATE = 0;
+    //When user does not grant permission or enable settings
+    public static final int LOCATION_NOT_AVAILABLE_STATE = 1;
+    //When waiting for first location, getLastLocation returned null
+    public static final int LOCATION_PENDING_STATE = 2;
     private static final String TAG = LocationUtility.class.getSimpleName();
     //Constant for calculating distance to location
     private static final double EARTH_RADIUS_KM = 6371;
@@ -47,114 +53,49 @@ public class LocationUtility{
     private static final int REQUEST_LOCATION_PERMISSION = 3;
     //Location update timing
     private static final int SECOND_IN_MILLS = 1000;
-    private static final int LOCATION_UPDATE_REQUEST_FREQUENCY = 10*SECOND_IN_MILLS;
-    private static final int FASTEST_LOCATION_UPDATE = 5*SECOND_IN_MILLS;
+    private static final int LOCATION_UPDATE_REQUEST_FREQUENCY = 10 * SECOND_IN_MILLS;
+    private static final int FASTEST_LOCATION_UPDATE = 5 * SECOND_IN_MILLS;
     //To check if onActivityResult is correct
     private static final int RESULT_OK = -1;
-    //States for location availibility
-    public static final int LOCATION_AVAILABLE_STATE = 0;
-    //When user does not grant permission or enable settings
-    public static final int LOCATION_NOT_AVAILABLE_STATE = 1;
-    //When waiting for first location, getLastLocation returned null
-    public static final int LOCATION_PENDING_STATE = 2;
     //Numbers after coma for calculating distance
     private static final int ACCURACY_FOR_LIST = 1;
     private static final int ACCURACY_FOR_DETAIL = 2;
     //shared preference for storing the number of locations found
     private static final String NUM_LOCATIONS_DISCOVERED_KEY = "number_of_locations_discovered";
     private static final String SHARED_PREFS_NAME = "Kuldiga_tour_app_shared_preferences";
-
-
-    private Activity context;
     //used to get regular location upates
-    LocationRequest mLocationRequest;
-    //location object that will be used to store the current location
-    android.location.Location mCurrentLocation;
-    LocationCallback mLocationCallback;
+    private LocationRequest mLocationRequest;
+    private LocationCallback mLocationCallback;
+    //Interface object to call methods in LocationActivity
+    private LocationInterface mLocationInterface;
+    private Activity context;
+    //Listener for getting the users action from the explanation message dialog
+    private DialogInterface.OnClickListener explenationMessageListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which) {
+                case DialogInterface.BUTTON_NEGATIVE:
+                    //The user has pressed on DON'T use button, turn off asking for permission
+                    mLocationInterface.differentLocationState(LOCATION_NOT_AVAILABLE_STATE);
+                    break;
+                case DialogInterface.BUTTON_POSITIVE:
+                    //The user has allowed to enable the location permission
+                    askLocationPermission();
+                    break;
+                default:
+                    Log.e(TAG, "Unexpected dialog answer");
+                    break;
+            }
+        }
+    };
     //Main entry point for interacting with the fused location provider
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    //Interface object to call methods in LocationActivity
-    LocationInterface mLocationInterface;
-
-
 
     //Constructor
     public LocationUtility(Activity context, LocationInterface locationInterface) {
         this.context = context;
         mLocationInterface = locationInterface;
     }
-
-    //Interface returns location to the activity or sends an error message
-    public interface LocationInterface {
-        //sends the current location to the locationsActivity
-        void currentLocationCallback(Location location);
-        //sends an error message to the locationsActivity
-        void errorMessageCallback(String errorMessage);
-        //sends a state message to locations activity in case location is not available or pending
-        void differentLocationState(int locationState);
-    }
-
-    public void startLocationRequestProcess(){
-        //get the fused location provider to get location
-        //used for both getting last location and regular location updates
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
-        //Check if permissions are granted and ask for them if not
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            //Permissions are not granted
-            //Check if we need too show the user an explanation why the app need location
-            //Method checks if the user has already once denied location permission
-            if (ActivityCompat.shouldShowRequestPermissionRationale
-                    (context, Manifest.permission.ACCESS_FINE_LOCATION)){
-                //Show the user a dialog box where it is explained why location is necessary
-                showPermissionExplenationMessage();
-            } else {
-                //No need to show explenation, just ask for the permission
-                askLocationPermission();
-            }
-        } else {
-            //Permissions granted
-            getLastKnownLocation();
-        }
-    }
-
-
-    /*
-    * Get the last known loation and then start regular updates
-    * If the Location is disabled on the device, then the location object will be null in onSuccess()
-    * Device settings will be updated when starting regular location updates
-    * Permission suppressed because they are checked before calling this method
-    */
-    @SuppressLint("MissingPermission")
-    private void getLastKnownLocation(){
-        mFusedLocationProviderClient.getLastLocation().
-                addOnSuccessListener(context,
-                        new OnSuccessListener<Location>() {
-                            @Override
-                            public void onSuccess(android.location.Location location) {
-                                //save the last known location in the global variable.
-                                mCurrentLocation = location;
-                                if (location != null) {
-                                    //Return the last known location to the activity
-                                    mLocationInterface.currentLocationCallback(location);
-                                } else {
-                                    //Location on device probably disabled, user will be asked to
-                                    //enable when regular updates are started
-                                    mLocationInterface.differentLocationState(LOCATION_PENDING_STATE);
-                                }
-                                //Start regular updates either way
-                                startRegularLocationUpdates();
-                            }
-                        });
-    }
-
-    //Ask for permission which is necessary for the last known location update
-    //The result will be first called in the locations activity
-    private void askLocationPermission(){
-        ActivityCompat.requestPermissions(context,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
-    }
-
 
     //Saves the location as found in shared preferences
     public static void setLocationDiscovered(KuldigaLocation kuldigaLocation, Activity activity) {
@@ -188,29 +129,78 @@ public class LocationUtility{
         return false;
     }
 
-    //Listener for getting the users action from the explanation message dialog
-    DialogInterface.OnClickListener explenationMessageListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            switch (which){
-                case DialogInterface.BUTTON_NEGATIVE:
-                    //The user has pressed on DON'T use button, turn off asking for permission
-                    mLocationInterface.differentLocationState(LOCATION_NOT_AVAILABLE_STATE);
-                    break;
-                case DialogInterface.BUTTON_POSITIVE:
-                    //The user has allowed to enable the location permission
-                    askLocationPermission();
-                    break;
-                default:
-                    Log.e(TAG, "Unexpected dialog answer");
-                    break;
-            }
-        }
-    };
+    //Gets the double values of lat and lon from the Srting saved in the database
+    private static double[] getLatLonFromCoordinates(String coordinates) {
+        String[] currentLocLatLong = coordinates.split(",");
+        currentLocLatLong[0] = currentLocLatLong[0].trim();
+        currentLocLatLong[1] = currentLocLatLong[1].trim();
+        return new double[]{
+                Double.valueOf(currentLocLatLong[0]),
+                Double.valueOf(currentLocLatLong[1])
+        };
+    }
 
-    private void startRegularLocationUpdates(){
+    public void startLocationRequestProcess() {
+        //get the fused location provider to get location
+        //used for both getting last location and regular location updates
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
+        //Check if permissions are granted and ask for them if not
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            //Permissions are not granted
+            //Check if we need too show the user an explanation why the app need location
+            //Method checks if the user has already once denied location permission
+            if (ActivityCompat.shouldShowRequestPermissionRationale
+                    (context, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                //Show the user a dialog box where it is explained why location is necessary
+                showPermissionExplenationMessage();
+            } else {
+                //No need to show explenation, just ask for the permission
+                askLocationPermission();
+            }
+        } else {
+            //Permissions granted
+            getLastKnownLocation();
+        }
+    }
+
+    /*
+     * Get the last known loation and then start regular updates
+     * If the Location is disabled on the device, then the location object will be null in onSuccess()
+     * Device settings will be updated when starting regular location updates
+     * Permission suppressed because they are checked before calling this method
+     */
+    @SuppressLint("MissingPermission")
+    private void getLastKnownLocation() {
+        mFusedLocationProviderClient.getLastLocation().
+                addOnSuccessListener(context,
+                        new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(android.location.Location location) {
+                                if (location != null) {
+                                    //Return the last known location to the activity
+                                    mLocationInterface.currentLocationCallback(location);
+                                } else {
+                                    //Location on device probably disabled, user will be asked to
+                                    //enable when regular updates are started
+                                    mLocationInterface.differentLocationState(LOCATION_PENDING_STATE);
+                                }
+                                //Start regular updates either way
+                                startRegularLocationUpdates();
+                            }
+                        });
+    }
+
+    //Ask for permission which is necessary for the last known location update
+    //The result will be first called in the locations activity
+    private void askLocationPermission() {
+        ActivityCompat.requestPermissions(context,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+    }
+
+    private void startRegularLocationUpdates() {
         //check if the location request has not already been started
-        if (mLocationRequest == null){
+        if (mLocationRequest == null) {
             createLocationRequestObject();
             createLocationCallback();
             checkDeviceSettingsForRegularUpdates();
@@ -218,7 +208,7 @@ public class LocationUtility{
     }
 
     //cretes an object that will be used for requests to the locations provider
-    private void createLocationRequestObject(){
+    private void createLocationRequestObject() {
         //Used to get regular updates of location
         mLocationRequest = new LocationRequest();
         //How often this object will try to request location
@@ -245,9 +235,9 @@ public class LocationUtility{
     * this method in the locationUtility object will be called with the same fields
     * */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_CHECK_SETTINGS:
-                if (resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     //Proper settings have been setup, start location updates
                     requestLocationUpdates();
                 } else {
@@ -263,13 +253,13 @@ public class LocationUtility{
     //Request regular location updates
     //Missing Permissions surpressed because permissions are checked before this method is called
     @SuppressLint("MissingPermission")
-    private void requestLocationUpdates(){
+    private void requestLocationUpdates() {
         mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest,
                 mLocationCallback, null);
     }
 
     //calculate distance if the coordinates are given directly as a string
-    public double calculateDistance(String coordinates, Location location){
+    public double calculateDistance(String coordinates, Location location) {
         double locLatLon[] = getLatLonFromCoordinates(coordinates);
         return harvestineFormula(location.getLatitude(),
                 location.getLongitude(),
@@ -279,7 +269,7 @@ public class LocationUtility{
     }
 
     //Calculate the distance between the current location and the KuldigaLocation object
-    public double calculateDistance(KuldigaLocation kuldigaLocation, Location location){
+    public double calculateDistance(KuldigaLocation kuldigaLocation, Location location) {
         double locLatLon[] = getLatLonFromCoordinates(kuldigaLocation.getCoordinates());
         return harvestineFormula(location.getLatitude(),
                 location.getLongitude(),
@@ -290,32 +280,21 @@ public class LocationUtility{
 
     private double harvestineFormula(double usersLat, double usersLong,
                                      double locLat, double locLong,
-                                     int accuracy){
+                                     int accuracy) {
         //haversine formula
         double deltaLat = Math.toRadians(usersLat - locLat);
         double deltaLon = Math.toRadians(usersLong - locLong);
         double userLatRadians = Math.toRadians(usersLat);
         double locLatRadians = Math.toRadians(locLat);
-        double a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) +
-                Math.sin(deltaLon/2) * Math.sin(deltaLon/2) *
+        double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+                Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2) *
                         Math.cos(userLatRadians) * Math.cos(locLatRadians);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double distance = EARTH_RADIUS_KM * c;
         double shortenedDouble = BigDecimal.valueOf(distance)
                 .setScale(accuracy, RoundingMode.HALF_UP)
                 .doubleValue();
         return shortenedDouble;
-    }
-
-    //Gets the double values of lat and lon from the Srting saved in the database
-    private static double[] getLatLonFromCoordinates(String coordinates){
-        String[] currentLocLatLong = coordinates.split(",");
-        currentLocLatLong[0] = currentLocLatLong[0].trim();
-        currentLocLatLong[1] = currentLocLatLong[1].trim();
-        return new double[]{
-                Double.valueOf(currentLocLatLong[0]),
-                Double.valueOf(currentLocLatLong[1])
-        };
     }
 
     //Method takes the created location request and checks if the device's settings are appropriate
@@ -394,6 +373,18 @@ public class LocationUtility{
                 }
             }
         };
+    }
+
+    //Interface returns location to the activity or sends an error message
+    public interface LocationInterface {
+        //sends the current location to the locationsActivity
+        void currentLocationCallback(Location location);
+
+        //sends an error message to the locationsActivity
+        void errorMessageCallback(String errorMessage);
+
+        //sends a state message to locations activity in case location is not available or pending
+        void differentLocationState(int locationState);
     }
 
 }
